@@ -64,3 +64,39 @@ Task 7  Service 层
 Task 8  Pinia
 ↓
 Task 9  基础测试
+
+
+---
+ask 1：项目初始化
+目标
+创建 Vue3 + TypeScript 项目。
+
+输入技术架构
+Vue3、Vite、TypeScript、Element Plus、Pinia、Vue Router
+
+操作
+
+创建项目：
+
+bash
+npm create vite@latest Personal-OS
+选择：
+
+Vue
+
+TypeScript
+
+安装依赖：
+
+bash
+npm install
+npm install vue-router pinia element-plus
+npm install dayjs uuid zod echarts
+输出
+项目：Personal-OS
+启动命令：
+
+bash
+npm run dev
+验收标准
+浏览器访问 localhost:5173，看到 Vue 默认页面
