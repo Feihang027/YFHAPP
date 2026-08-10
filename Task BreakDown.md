@@ -5,12 +5,11 @@
 ## 目标
 指导 Personal OS 第一阶段开发
 
-### 1. 第一阶段开发目标
-#### Sprint 1目标
+## 1. 第一阶段开发目标
+### Sprint 1目标
 完成 Personal OS 的基础运行框架：
 
-最终达到：
-打开浏览器，可以看到 Personal OS 页面框架，并且具备完整的数据存储能力。
+最终达到：打开浏览器，可以看到 Personal OS 页面框架，并且具备完整的数据存储能力。
 
 #### Sprint 1 完成范围
 **必须完成：**
@@ -57,8 +56,7 @@ Task 9 基础测试
 **目标**
 创建 Vue3 + TypeScript 项目。
 
-**输入**
-技术架构：
+**输入 技术架构：**
 - Vue3
 - Vite
 - TypeScript
@@ -107,8 +105,7 @@ src
 Task 3：主页面框架
 目标
 完成应用外壳。
-创建：
-layouts/MainLayout.vue
+创建：layouts/MainLayout.vue
 布局结构：
 plaintext
 -----------------
@@ -244,14 +241,16 @@ app.ts
 Task Store 示例：
 typescript
 运行
-state: {
-  tasks
-},
-actions: {
-  loadTasks()
-  addTask()
-  updateTask()
-  deleteTask()
+{
+  state: {
+    tasks
+  },
+  actions: {
+    loadTasks()
+    addTask()
+    updateTask()
+    deleteTask()
+  }
 }
 验收标准
 页面全部通过 Store 获取操作数据。
@@ -259,7 +258,7 @@ Task 10：基础数据测试
 目标
 验证整体架构。
 测试流程：
-创建任务，输入标题：学习Vue3，执行保存
+创建任务，输入标题：学习 Vue3，执行保存
 检查浏览器 IndexedDB，数据已入库
 刷新页面，任务依然存在
 执行删除操作
@@ -295,3 +294,11 @@ Commit 6：implement store and service layer
 Commit 7：complete sprint1 foundation
 AI Coding 使用规范
 每次让 AI 只处理一个 Task。
+plaintext
+
+---
+
+# 关键Markdown语法说明（以后自己写文档避免错乱）
+1. **代码块必须前后加三个反引号**
+bash
+npm xxx
