@@ -282,4 +282,4 @@ Commit 5：implement IndexedDB layer
 Commit 6：implement store and service layer
 Commit 7：complete sprint1 foundation
 AI Coding 使用规范
-每次让 AI 只处理一个 Task
+每次让 AI 只处理一个 Task。
