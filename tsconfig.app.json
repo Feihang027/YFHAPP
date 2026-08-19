@@ -20,7 +20,12 @@
     "jsx": "preserve",
     "types": [
       "vite/client"
-    ]
+    ],
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ]
+    }
   },
   "include": [
     "src/**/*.ts",
