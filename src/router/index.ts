@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
+import MainLayout from '../layouts/MainLayout.vue'
 
 import Dashboard from '../views/Dashboard.vue'
 import Tasks from '../views/Tasks.vue'
@@ -10,47 +11,50 @@ import Fitness from '../views/Fitness.vue'
 import Diet from '../views/Diet.vue'
 import Games from '../views/Games.vue'
 
-
 const router = createRouter({
-
-  history: createWebHistory(),
+  history: createWebHistory(import.meta.env.BASE_URL),
 
   routes: [
     {
       path: '/',
-      component: Dashboard
-    },
-    {
-      path: '/tasks',
-      component: Tasks
-    },
-    {
-      path: '/media',
-      component: Media
-    },
-    {
-      path: '/development',
-      component: Development
-    },
-    {
-      path: '/consulting',
-      component: Consulting
-    },
-    {
-      path: '/fitness',
-      component: Fitness
-    },
-    {
-      path: '/diet',
-      component: Diet
-    },
-    {
-      path: '/games',
-      component: Games
+      component: MainLayout,
+
+      children: [
+        {
+          path: '',
+          component: Dashboard
+        },
+        {
+          path: 'tasks',
+          component: Tasks
+        },
+        {
+          path: 'media',
+          component: Media
+        },
+        {
+          path: 'development',
+          component: Development
+        },
+        {
+          path: 'consulting',
+          component: Consulting
+        },
+        {
+          path: 'fitness',
+          component: Fitness
+        },
+        {
+          path: 'diet',
+          component: Diet
+        },
+        {
+          path: 'games',
+          component: Games
+        }
+      ]
     }
   ]
-
 })
-
 
 export default router
