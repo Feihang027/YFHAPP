@@ -1,4 +1,4 @@
-export interface Meal {
+export interface Diet {
 
 
   id: string
@@ -7,11 +7,7 @@ export interface Meal {
   date: string
 
 
-  mealType:
-  | 'breakfast'
-  | 'lunch'
-  | 'dinner'
-  | 'snack'
+  meal: string
 
 
   food: string
@@ -22,5 +18,16 @@ export interface Meal {
 
   protein: number
 
+
+  carbs: number
+
+
+  fat: number
+
+
+  createdAt: string
+
+
+  updatedAt: string
 
 }
