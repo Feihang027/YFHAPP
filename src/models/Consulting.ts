@@ -1,52 +1,80 @@
 export interface ConsultingProject {
 
 
+  // 唯一id
   id: string
 
 
-  client: string
+
+  // 客户名称
+  clientName: string
 
 
-  name: string
+
+  // 咨询项目名称
+  projectName: string
 
 
 
+  // 项目描述
+  description: string
+
+
+
+  // 当前状态
   status:
-  | 'planning'
-  | 'working'
-  | 'completed'
+  "planning"
+  |
+  "in_progress"
+  |
+  "completed"
 
 
 
-  requirements?: string
-
-
-  communicationRecords?: string
-
-
-
-  deliverables?: string
+  // 沟通记录
+  communications: string[]
 
 
 
+  // 会议笔记
+  meetingNotes: string[]
+
+
+
+  // 客户需求
+  requirements: string[]
+
+
+
+  // 交付物
+  deliverables: string[]
+
+
+
+  // 截止日期
   deadline?: string
 
 
 
-  nextContactTime?: string
+  // 下一次联系时间
+  nextContactDate?: string
 
 
 
-  hours?: number
+  // 咨询时长（小时）
+  hours: number
 
 
 
-  fee?: number
+  // 收入
+  fee: number
 
 
 
   createdAt: string
 
+
   updatedAt: string
+
 
 }

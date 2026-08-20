@@ -1,97 +1,41 @@
-import { openDatabase } from "@/database"
-import { STORE_NAMES } from "@/database"
 import type { Task } from "@/models/Task"
 
 
-// 添加任务
-export async function addTask(task: Task) {
-
-  const db = await openDatabase()
-
-
-  return new Promise<void>((resolve, reject) => {
+import {
+  createRecord,
+  getAllRecords
+} from "@/database"
 
 
-    const transaction =
-      db.transaction(
-        STORE_NAMES.TASKS,
-        "readwrite"
-      )
-
-
-    const store =
-      transaction.objectStore(
-        STORE_NAMES.TASKS
-      )
-
-
-    const request =
-      store.add(task)
+import {
+  STORE_NAMES
+} from "@/database"
 
 
 
-    request.onsuccess = () => {
+/**
+ * 新增任务
+ */
+export function addTask(
+  task: Task
+) {
 
-      resolve()
-
-    }
-
-
-    request.onerror = () => {
-
-      reject(request.error)
-
-    }
-
-
-  })
+  return createRecord(
+    STORE_NAMES.TASKS,
+    task
+  )
 
 }
 
 
 
-// 获取所有任务
-export async function getTasks(): Promise<Task[]> {
+/**
+ * 获取所有任务
+ */
+export function getTasks() {
 
-
-  const db = await openDatabase()
-
-
-  return new Promise((resolve, reject) => {
-
-
-    const transaction =
-      db.transaction(
-        STORE_NAMES.TASKS,
-        "readonly"
-      )
-
-
-    const store =
-      transaction.objectStore(
-        STORE_NAMES.TASKS
-      )
-
-
-    const request =
-      store.getAll()
-
-
-
-    request.onsuccess = () => {
-
-      resolve(request.result)
-
-    }
-
-
-    request.onerror = () => {
-
-      reject(request.error)
-
-    }
-
-
-  })
+  return getAllRecords<Task>(
+    STORE_NAMES.TASKS
+  )
 
 }

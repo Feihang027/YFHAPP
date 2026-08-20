@@ -12,7 +12,6 @@ import 'element-plus/dist/index.css'
 
 import { openDatabase } from './database'
 
-
 openDatabase()
   .then(() => {
 

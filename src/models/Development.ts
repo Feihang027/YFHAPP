@@ -7,40 +7,36 @@ export interface DevelopmentProject {
   name: string
 
 
-  description?: string
+  description: string
+
+
+  status:
+  "planning"
+  |
+  "developing"
+  |
+  "completed"
 
 
 
-  stage:
-  | 'planning'
-  | 'developing'
-  | 'testing'
-  | 'completed'
+  milestones: string[]
+
+
+
+  logs: string[]
+
+
+
+  nextAction: string
 
 
 
   repository?: string
 
 
-  localPath?: string
-
-
-
-  /**
-   * 技术笔记
-   */
-  notes?: string
-
-
-
-  /**
-   * 下一步行动
-   */
-  nextAction?: string
-
-
 
   createdAt: string
+
 
   updatedAt: string
 
