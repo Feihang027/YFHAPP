@@ -2,81 +2,168 @@
 
 <div>
 
+
 <h1>
 今日计划
 </h1>
 
 
-<button @click="test">
+<el-button
+type="primary"
+@click="addTest"
+>
+新建任务
+</el-button>
 
-新增测试任务
-
-</button>
 
 
-<div
-v-for="task in taskStore.tasks"
-:key="task.id"
+<el-table
+:data="taskStore.tasks"
+style="width:100%"
 >
 
-{{task.title}}
+<el-table-column
+prop="title"
+label="任务"
+/>
 
-</div>
+
+<el-table-column
+prop="priority"
+label="优先级"
+/>
+
+<el-table-column 
+prop="status" 
+label="状态" 
+/>
 
 
-</div>
+
+<el-table-column
+label="操作"
+>
+
+<template #default="scope">
+
+
+<el-button
+type="success"
+size="small"
+@click="completeTask(scope.row)"
+v-if="scope.row.status !== 'completed'"
+>
+
+完成
+
+</el-button>
+
 
 </template>
 
 
+</el-table-column>
+
+
+
+</el-table>
+</div>
+
+
+</template>
 
 <script setup lang="ts">
 
-import { onMounted } from "vue"
 
-import { useTaskStore } from "@/stores/taskStore"
+import {
+onMounted
+}
+from "vue"
+
+
+
+import {
+useTaskStore
+}
+from "@/stores/taskStore"
 
 
 
 const taskStore =
-    useTaskStore()
+useTaskStore()
 
 
 
 onMounted(()=>{
 
-    taskStore.loadTasks()
+taskStore.loadTasks()
 
 })
 
+async function completeTask(task:any){
 
 
-function test(){
+task.status = "completed"
 
 
-taskStore.createTask({
-
-id:Date.now().toString(),
-
-title:"Pinia测试任务",
-
-date:"2026-08-19",
-
-priority:"high",
-
-status:"pending",
-
-estimatedTime:30,
-
-createdAt:new Date().toISOString(),
-
-updatedAt:new Date().toISOString()
+task.updatedAt =
+new Date().toISOString()
 
 
-})
+await taskStore.editTask(task)
 
 
 }
 
+
+
+function addTest(){
+
+
+taskStore.createTask({
+
+
+id:
+Date.now().toString(),
+
+
+title:
+"学习Vue3",
+
+
+description:
+"完成Personal OS开发",
+
+
+date:
+new Date()
+.toISOString()
+.slice(0,10),
+
+
+priority:
+"high",
+
+
+status:
+"pending",
+
+
+estimatedTime:
+60,
+
+
+createdAt:
+new Date()
+.toISOString(),
+
+
+updatedAt:
+new Date()
+.toISOString()
+})
+
+
+}
 
 </script>

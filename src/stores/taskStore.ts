@@ -1,43 +1,61 @@
-import { defineStore } from "pinia"
-
-import type { Task } from "@/models/Task"
+import {
+  defineStore
+}
+  from "pinia"
 
 import {
+  getTasks,
   addTask,
-  getTasks
-} from "@/services/taskService"
+  updateTask,
+  deleteTask
+}
+  from "@/services/taskService"
 
 
 
-export const useTaskStore = defineStore(
-  "task",
-  {
-
-    // 数据
-    state: () => ({
-
-      tasks: [] as Task[]
-
-    }),
-    // 方法
-    actions: {
+import type {
+  Task
+}
+  from "@/models/Task"
 
 
-      // 加载任务
-      async loadTasks() {
 
-        this.tasks =
-          await getTasks()
+export const useTaskStore =
+  defineStore(
+    "task",
+    {
 
-      },
-      // 新增任务
-      async createTask(task: Task) {
 
-        await addTask(task)
+      state: () => ({ tasks: [] as Task[] }),
 
-        this.tasks.push(task)
+      actions: {
+        async loadTasks() {
+          this.tasks =
+            await getTasks()
 
+
+        },
+
+        async createTask(task: Task) {
+
+
+          await addTask(task)
+
+
+          await this.loadTasks()
+
+
+        },
+
+        async editTask(task: Task) {
+          await updateTask(task)
+          await this.loadTasks()
+        },
+
+        async removeTask(id: string) {
+          await deleteTask(id)
+          await this.loadTasks()
+        }
       }
-    }
-  }
-)
+
+    })

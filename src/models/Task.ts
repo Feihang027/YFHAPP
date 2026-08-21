@@ -3,56 +3,40 @@ export interface Task {
   id: string
 
 
-  /**
-   * 事项标题
-   */
+  //任务名称
   title: string
 
+  //任务描述
+  description?: string
 
-  /**
-   * 所属日期
-   * YYYY-MM-DD
-   */
+  //日期
+
   date: string
 
+  //优先级
 
-  /**
-   * 优先级
-   * high / medium / low
-   */
-  priority: 'high' | 'medium' | 'low'
+  priority:
+  "low"
+  |
+  "medium"
+  |
+  "high"
 
+  //状态
 
-  /**
-   * 状态
-   */
   status:
-  | 'pending'
-  | 'completed'
-  | 'delayed'
-  | 'cancelled'
+  "pending"
+  |
+  "doing"
+  |
+  "completed"
 
+  //预计时间
 
-  /**
-   * 预计耗时（分钟）
-   */
   estimatedTime: number
 
-
-  /**
-   * 具体时间段
-   */
-  startTime?: string
-
-
-  /**
-   * 完成时间
-   */
-  completedAt?: string
-
-
   createdAt: string
-
-
   updatedAt: string
+
+
 }
