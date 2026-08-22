@@ -11,22 +11,25 @@ import {
 }
   from "@/services/taskService"
 
-
-
 import type {
   Task
 }
   from "@/models/Task"
 
-
-
 export const useTaskStore = defineStore("task",
   {
-
     state: () => ({
       tasks: [] as Task[],
+      // 状态筛选
       filterStatus: "all",
-      filterPriority: "all"
+
+      // 优先级筛选
+      filterPriority: "all",
+
+      // 排序方式
+      sortType: "created",
+
+      showToday: false
     }),
 
 
@@ -62,18 +65,10 @@ export const useTaskStore = defineStore("task",
       },
 
       filteredTasks(state) {
-
-
-        let result = state.tasks
-
-
+        let result = [...state.tasks]
 
         // 状态筛选
-
-        if (
-          state.filterStatus !== "all"
-        ) {
-
+        if (state.filterStatus !== "all") {
           result =
             result.filter(
               task =>
@@ -84,16 +79,43 @@ export const useTaskStore = defineStore("task",
 
         // 优先级筛选
 
-        if (
-          state.filterPriority !== "all"
-        ) {
-
+        if (state.filterPriority !== "all") {
           result =
             result.filter(
               task =>
                 task.priority === state.filterPriority
             )
+        }
 
+        // 今日任务过滤
+        if (state.showToday) {
+          const today = new Date().toISOString().slice(0, 10)
+          result = result.filter(task => task.date === today)
+        }
+
+        // 排序
+        if (state.sortType === "priority") {
+          const level: any = {
+            high: 3,
+            medium: 2,
+            low: 1
+          }
+
+          result.sort(
+            (a, b) =>
+              level[b.priority]
+              -
+              level[a.priority]
+          )
+        }
+
+        if (state.sortType === "created") {
+          result.sort(
+            (a, b) =>
+              new Date(b.createdAt).getTime()
+              -
+              new Date(a.createdAt).getTime()
+          )
         }
         return result
       }
