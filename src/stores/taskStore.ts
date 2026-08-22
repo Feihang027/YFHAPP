@@ -24,7 +24,9 @@ export const useTaskStore = defineStore("task",
   {
 
     state: () => ({
-      tasks: [] as Task[]
+      tasks: [] as Task[],
+      filterStatus: "all",
+      filterPriority: "all"
     }),
 
 
@@ -57,6 +59,43 @@ export const useTaskStore = defineStore("task",
         return Math.round(
           completed / state.tasks.length * 100
         )
+      },
+
+      filteredTasks(state) {
+
+
+        let result = state.tasks
+
+
+
+        // 状态筛选
+
+        if (
+          state.filterStatus !== "all"
+        ) {
+
+          result =
+            result.filter(
+              task =>
+                task.status === state.filterStatus
+            )
+
+        }
+
+        // 优先级筛选
+
+        if (
+          state.filterPriority !== "all"
+        ) {
+
+          result =
+            result.filter(
+              task =>
+                task.priority === state.filterPriority
+            )
+
+        }
+        return result
       }
     },
 
@@ -83,6 +122,19 @@ export const useTaskStore = defineStore("task",
       async removeTask(id: string) {
         await deleteTask(id)
         await this.loadTasks()
+      },
+
+      setFilterStatus(status: string) {
+
+        this.filterStatus = status
+
+      },
+
+
+      setFilterPriority(priority: string) {
+
+        this.filterPriority = priority
+
       }
     }
   })
