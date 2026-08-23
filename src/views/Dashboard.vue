@@ -17,7 +17,7 @@ YFHAPP 首页
 <el-row :gutter="20">
 
 
-<!-- 今日任务 -->
+<!-- 今日任务数量 -->
 
 <el-col :span="8">
 
@@ -29,7 +29,9 @@ YFHAPP 首页
 
 
 <div class="number">
-{{dashboard.taskCount}}
+
+{{dashboard.todayTasks.length}}
+
 </div>
 
 
@@ -53,7 +55,9 @@ YFHAPP 首页
 
 
 <div class="number">
+
 {{dashboard.mediaCount}}
+
 </div>
 
 
@@ -61,42 +65,168 @@ YFHAPP 首页
 
 </el-col>
 
+
+
+
 <!-- 开发项目 -->
-
 <el-col :span="8">
-
-
 <el-card>
-
-
 <h3>
 开发项目
 </h3>
 
-
 <div class="number">
+
 {{dashboard.projectCount}}
+
 </div>
+</el-card>
+</el-col>
+</el-row>
+
+
+
+<!-- 今日任务列表 -->
+<el-card class="today-card">
+
+
+<h2>
+今日任务
+</h2>
+
+<div v-if="dashboard.todayTasks.length">
+
+
+<el-table :data="dashboard.todayTasks">
+
+
+<el-table-column prop="title" label="任务"/>
+
+
+<el-table-column prop="status" label="状态"/>
+
+
+</el-table>
+
+
+</div>
+
+
+
+<div v-else>
+今天暂无任务
+</div>
+
 
 
 </el-card>
 
 
-</el-col>
+<!-- 今日完成率 -->
+<el-card>
+<h2>
+今日完成率
+</h2>
+
+<el-progress type="circle":percentage="dashboard.completionRate"/>
+<p>
+
+完成：
+{{dashboard.completedToday}}
+/
+{{dashboard.todayTasks.length}} 个任务
+
+</p>
+</el-card>
 
 
 
-</el-row>
+<!-- 今日训练 -->
+<el-card>
+<h2>
+今日训练
+</h2>
 
-<el-row 
-:gutter="20"
-class="second-row"
->
+<div v-if="dashboard.todayFitnessList.length">
+
+
+<div v-for="fitness in dashboard.todayFitnessList" :key="fitness.id">
+
+
+<h3>
+{{fitness.name}}
+</h3>
+
+
+<p>
+训练时长：{{fitness.duration}}分钟
+</p>
+
+
+<p>
+状态：{{fitness.status}}
+</p>
+
+<h4>
+训练动作
+</h4>
+
+
+<div v-for="exercise in fitness.exercises":key="exercise.name">
+<p>
+
+- {{exercise.name}}
+
+{{exercise.weight}}kg
+
+{{exercise.sets}}组
+
+× {{exercise.reps}}次
+
+</p>
+
+</div>
+<hr>
+</div>
+</div>
+
+<div v-else>
+今天没有训练计划
+</div>
+
+</el-card>
+
+
+<!-- 今日饮食 -->
+<el-card>
+<h2>
+今日饮食
+</h2>
+<div v-if="dashboard.todayDiet">
+{{dashboard.todayDiet.name}}
+
+
+</div>
+
+
+<div v-else>
+暂无饮食记录
+</div>
+
+
+
+</el-card>
+
+<!-- ================= -->
+<!-- 总数据 -->
+<!-- ================= -->
+
+
+<el-row :gutter="20"class="second-row">
 
 <!-- 健身 -->
 
 <el-col :span="8">
-
 
 <el-card>
 
@@ -107,9 +237,7 @@ class="second-row"
 
 
 <div class="number">
-
 {{dashboard.fitnessCount}}
-
 </div>
 
 
@@ -119,10 +247,7 @@ class="second-row"
 </el-col>
 
 <!-- 饮食 -->
-
-
 <el-col :span="8">
-
 
 <el-card>
 
@@ -133,17 +258,19 @@ class="second-row"
 
 
 <div class="number">
-
 {{dashboard.dietCount}}
-
 </div>
 
 
 </el-card>
 
+
 </el-col>
 
+
+
 </el-row>
+
 
 <!-- 快捷操作 -->
 
@@ -151,105 +278,71 @@ class="second-row"
 快捷操作
 </h2>
 
+<el-row :gutter="20" class="quick-actions">
 
-<el-row 
-:gutter="20"
-class="quick-actions"
->
+<el-col :xs="24":sm="12":md="8">
 
 
-<el-col 
-:xs="24"
-:sm="12"
-:md="8"
->
+<el-button type="primary" @click="go('/tasks')">
 
-
-<el-button
-type="primary"
-@click="go('/tasks')"
->
 新建任务
+
 </el-button>
 
 
 </el-col>
 
-<el-col 
-:xs="24"
-:sm="12"
-:md="8"
->
 
+<el-col :xs="24":sm="12":md="8">
 
-<el-button
-type="success"
-@click="go('/media')"
->
+<el-button type="success" @click="go('/media')">
+
 发布内容
+
 </el-button>
 
 
 </el-col>
 
-<el-col 
-:xs="24"
-:sm="12"
-:md="8"
->
+<el-col :xs="24":sm="12":md="8">
 
 
-<el-button
-type="warning"
-@click="go('/development')"
->
+<el-button type="warning" @click="go('/development')">
+
 添加项目
+
 </el-button>
 
 
 </el-col>
 
 
-<el-col 
-:xs="24"
-:sm="12"
-:md="8"
->
+<el-col :xs="24":sm="12":md="8">
 
 
-<el-button
-type="danger"
-@click="go('/fitness')"
->
+<el-button type="danger" @click="go('/fitness')">
+
 记录训练
 </el-button>
 
 
 </el-col>
 
-<el-col 
-:xs="24"
-:sm="12"
-:md="8"
->
+
+<el-col  :xs="24" :sm="12":md="8">
 
 
-<el-button
-@click="go('/diet')"
->
+<el-button @click="go('/diet')">
+
 添加饮食
 </el-button>
 
 
 </el-col>
 
-
 </el-row>
 </div>
-
-
 </template>
-
 
 <script setup lang="ts">
 
@@ -259,17 +352,19 @@ onMounted
 }
 from "vue"
 
+
+
 import {
 useRouter
 }
 from "vue-router"
 
+
+
 import {
 useDashboardStore
 }
 from "@/stores/dashboardStore"
-
-
 
 const dashboard =
 useDashboardStore()
@@ -278,77 +373,46 @@ const router =
 useRouter()
 
 function go(path:string){
-
 router.push(path)
-
 }
+
 
 onMounted(()=>{
 
-
 dashboard.loadDashboard()
-
-
 })
-
 
 </script>
 
 <style scoped>
-
-
 .dashboard{
-
 padding:20px;
-
 }
-
-
 
 .el-card{
-
 text-align:center;
-
-height:150px;
-
+margin-bottom:20px;
 }
-
-
 
 .number{
-
 font-size:40px;
-
 font-weight:bold;
-
 margin-top:20px;
-
 }
 
-
-
 .second-row{
-
 margin-top:20px;
-
 }
 
 .quick-title{
-
 margin-top:40px;
-
 }
 
 
 .el-button{
-
 width:100%;
-
 height:50px;
-
 font-size:16px;
-
 }
-
 
 </style>

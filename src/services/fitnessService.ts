@@ -44,15 +44,6 @@ import type {
 
 
 
-
-
-/*
-==========================
-训练计划
-==========================
-*/
-
-
 // 新增训练计划
 
 export function addFitnessPlan(
@@ -72,9 +63,6 @@ export function addFitnessPlan(
 }
 
 
-
-
-
 // 获取全部训练计划
 
 export function getFitnessPlans() {
@@ -86,9 +74,6 @@ export function getFitnessPlans() {
   )
 
 }
-
-
-
 
 
 // 修改训练计划
@@ -108,9 +93,6 @@ export function updateFitnessPlan(
   )
 
 }
-
-
-
 
 
 // 删除训练计划
@@ -290,10 +272,6 @@ export function updateBodyMetric(
   )
 
 }
-
-
-
-
 
 // 删除身体数据
 

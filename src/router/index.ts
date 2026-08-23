@@ -8,6 +8,7 @@ import Media from '../views/Media.vue'
 import Development from '../views/Development.vue'
 import Consulting from '../views/Consulting.vue'
 import Fitness from '../views/Fitness.vue'
+import FitnessRecord from '../views/FitnessRecord.vue'
 import Diet from '../views/Diet.vue'
 import Games from '../views/Games.vue'
 
@@ -45,13 +46,18 @@ const router = createRouter({
           component: Fitness
         },
         {
+          path: 'fitness-record',
+          component: FitnessRecord
+        },
+        {
           path: 'diet',
           component: Diet
         },
         {
           path: 'games',
           component: Games
-        }
+        },
+
       ]
     }
   ]
