@@ -9,6 +9,7 @@ import Development from '../views/Development.vue'
 import Consulting from '../views/Consulting.vue'
 import Fitness from '../views/Fitness.vue'
 import FitnessRecord from '../views/FitnessRecord.vue'
+import FitnessHistory from '../views/FitnessHistory.vue'
 import Diet from '../views/Diet.vue'
 import Games from '../views/Games.vue'
 
@@ -48,6 +49,10 @@ const router = createRouter({
         {
           path: 'fitness-record',
           component: FitnessRecord
+        },
+        {
+          path: 'fitness-history',
+          component: FitnessHistory
         },
         {
           path: 'diet',

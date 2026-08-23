@@ -12,13 +12,15 @@
 新增训练计划
 </el-button>
 
+<el-button type="success" @click="router.push('/fitness-history')">
+训练历史
+</el-button>
+
 <h2>
 训练计划列表
 </h2>
 
-<div v-for="plan in fitnessStore.plans" 
-:key="plan.id"
->
+<div v-for="plan in fitnessStore.plans"  :key="plan.id">
 
 
 <h3>
@@ -273,7 +275,6 @@ onMounted,
 ref
 }
 from "vue"
-
 
 import {
 useFitnessStore
