@@ -24,6 +24,10 @@
 训练历史
 </el-button>
 
+<el-button type="warning" @click="router.push('/fitness-templates')">
+训练模板
+</el-button>
+
 <h2>
 训练计划列表
 </h2>
@@ -296,7 +300,8 @@
 
 <script setup lang="ts">
 import {
-useRouter
+useRouter,
+useRoute
 }
 from "vue-router"
 
@@ -312,10 +317,16 @@ useFitnessStore
 }
 from "@/stores/fitnessStore"
 
+import {
+fitnessTemplates
+}
+from "@/database/fitnessTemplates"
+
 
 
 const fitnessStore = useFitnessStore()
 const router = useRouter()
+const route = useRoute()
 
 const createVisible = ref(false)
 const editVisible = ref(false)
@@ -324,30 +335,14 @@ const statusFilter = ref("all")
 
 
 
-onMounted(()=>{
-fitnessStore.loadFitness()
-})
-
 const createPlanData = ref({
-
 name:"",
-
 date: new Date().toISOString().slice(0,10),
-
-
 duration:60,
-
-
 status:"pending",
-
-
 weekday:1,
-
-
 exercises:[
-
 {
-
 name:"",
 
 weight:0,
@@ -357,10 +352,25 @@ sets:0,
 reps:0,
 
 restTime:60
-
 }
 ]
+})
 
+onMounted(()=>{
+fitnessStore.loadFitness()
+const templateId =route.query.templateId
+
+if(templateId){
+const template = fitnessTemplates.find(item=>item.id===templateId)
+if(template){
+createPlanData.value.name = template.name
+createPlanData.value.duration = template.duration
+createPlanData.value.exercises = template.exercises.map(item=>({
+...item
+}))
+createVisible.value=true
+}
+}
 })
 
 const filteredPlans = computed(()=>{
@@ -389,21 +399,19 @@ status: createPlanData.value.status,
 
 weekday:createPlanData.value.weekday,
 
-exercises:[
+exercises:createPlanData.value.exercises.map(item=>({
 
-{
+name:item.name,
 
-name:createPlanData.value.exercises[0].name,
+weight:item.weight,
 
-weight:createPlanData.value.exercises[0].weight,
+sets:item.sets,
 
-sets:createPlanData.value.exercises[0].sets,
+reps:item.reps,
 
-reps:createPlanData.value.exercises[0].reps,
+restTime:item.restTime
 
-restTime: createPlanData.value.exercises[0].restTime
-}
-],
+})),
 
 createdAt:new Date().toISOString(),
 
