@@ -196,6 +196,25 @@ YFHAPP 首页
 
 </el-card>
 
+<el-card>
+<h2>
+健身概览
+</h2>
+<p>
+累计训练：{{fitnessStore.records.length}}次
+</p>
+
+
+<p>
+累计训练时长：{{totalDuration}}分钟
+</p>
+
+
+<p>
+当前体重：{{latestWeight}}kg
+</p>
+</el-card>
+
 
 <!-- 今日饮食 -->
 <el-card>
@@ -345,41 +364,70 @@ YFHAPP 首页
 </template>
 
 <script setup lang="ts">
-
-
 import {
 onMounted
 }
 from "vue"
 
-
+import {
+computed
+}
+from "vue"
 
 import {
 useRouter
 }
 from "vue-router"
 
-
-
 import {
 useDashboardStore
 }
 from "@/stores/dashboardStore"
 
-const dashboard =
-useDashboardStore()
+import {
+useFitnessStore
+} from "@/stores/fitnessStore"
 
-const router =
-useRouter()
+const dashboard = useDashboardStore()
+
+const router = useRouter()
+
+const fitnessStore = useFitnessStore()
+
+
+const totalDuration = computed(()=>{
+
+return fitnessStore.records.reduce(
+
+(sum,item)=>{return sum + item.duration},0)
+})
+
+
+const latestWeight = computed(()=>{
+if(
+fitnessStore.bodyMetrics.length===0
+){
+
+return 0
+
+}
+return fitnessStore.bodyMetrics[
+fitnessStore.bodyMetrics.length - 1
+].weight
+
+
+})
 
 function go(path:string){
 router.push(path)
 }
 
 
-onMounted(()=>{
+onMounted(async()=>{
 
-dashboard.loadDashboard()
+await fitnessStore.loadFitness()
+
+await dashboard.loadDashboard()
 })
 
 </script>

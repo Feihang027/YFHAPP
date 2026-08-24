@@ -3,8 +3,6 @@ export const DB_NAME = "PersonalOS"
 
 export const DB_VERSION = 2
 
-
-
 export const STORE_NAMES = {
 
 
@@ -35,6 +33,4 @@ export const STORE_NAMES = {
 
 
   SETTINGS: "settings"
-
-
 }

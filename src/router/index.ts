@@ -10,6 +10,8 @@ import Consulting from '../views/Consulting.vue'
 import Fitness from '../views/Fitness.vue'
 import FitnessRecord from '../views/FitnessRecord.vue'
 import FitnessHistory from '../views/FitnessHistory.vue'
+import FitnessDashboard from '../views/FitnessDashboard.vue'
+import BodyMetrics from '../views/BodyMetrics.vue'
 import Diet from '../views/Diet.vue'
 import Games from '../views/Games.vue'
 
@@ -53,6 +55,14 @@ const router = createRouter({
         {
           path: 'fitness-history',
           component: FitnessHistory
+        },
+        {
+          path: 'fitness-dashboard',
+          component: FitnessDashboard
+        },
+        {
+          path: 'body-metrics',
+          component: BodyMetrics
         },
         {
           path: 'diet',

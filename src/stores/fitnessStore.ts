@@ -2,46 +2,33 @@ import {
   defineStore
 } from "pinia"
 
-
-
 import type {
   FitnessPlan
 } from "@/models/FitnessPlan"
-
-
 
 import type {
   FitnessRecord
 } from "@/models/FitnessRecord"
 
-
-
 import type {
   BodyMetric
 } from "@/models/BodyMetric"
 
-
-
-
 import {
 
   addFitnessPlan,
-
   getFitnessPlans,
-
   deleteFitnessPlan,
-
+  updateFitnessPlan,
   addFitnessRecord,
-
   getFitnessRecords,
   addBodyMetric,
-
   getBodyMetrics,
-
-  updateFitnessPlan
-
-
+  updateBodyMetric as updateBodyMetricService,
+  deleteBodyMetric as deleteBodyMetricService
 } from "@/services/fitnessService"
+
+
 
 
 export const useFitnessStore =
@@ -61,37 +48,36 @@ export const useFitnessStore =
         //身体数据
         bodyMetrics: [] as BodyMetric[]
 
-      }),
 
+      }),
 
       actions: {
         /*
-         * 加载所有健身数据
-         */
+        加载所有健身数据
+        */
         async loadFitness() {
-          this.plans = await getFitnessPlans()
+          this.plans =
+            await getFitnessPlans()
 
-          this.records = await getFitnessRecords()
-
-          this.bodyMetrics = await getBodyMetrics()
+          this.records =
+            await getFitnessRecords()
+          this.bodyMetrics =
+            await getBodyMetrics()
 
         },
-
         /*
-         * 新增训练计划
-         */
+        新增训练计划
+        */
         async createPlan(
           plan: FitnessPlan
         ) {
-          await addFitnessPlan(
-            plan
-          )
-          this.plans.push(
-            plan
-          )
+          await addFitnessPlan(plan)
+          this.plans.push(plan)
         },
 
-
+        /*
+        修改训练计划
+        */
         async updatePlan(
           plan: FitnessPlan
         ) {
@@ -101,59 +87,60 @@ export const useFitnessStore =
             )
           await updateFitnessPlan(data)
           await this.loadFitness()
-
         },
 
 
         /*
-         * 新增训练记录
-         */
+        新增训练记录
+        */
         async createRecord(
           record: FitnessRecord
-
         ) {
+          await addFitnessRecord(record)
+          this.records.push(record)
+        },
 
-          await addFitnessRecord(
-            record
-          )
+        /*
+        新增身体数据
+        */
+        async createBodyMetric(
+          metric: BodyMetric
+        ) {
+          await addBodyMetric(metric)
+          this.bodyMetrics.push(metric)
+        },
 
-          this.records.push(
-            record
-          )
+        /*
+        修改身体数据
+        */
+        async updateBodyMetric(
+          metric: BodyMetric
+        ) {
+          await updateBodyMetricService(metric)
+          await this.loadFitness()
+        },
 
-
+        /*
+        删除身体数据
+        */
+        async removeBodyMetric(
+          id: string
+        ) {
+          await deleteBodyMetricService(id)
+          await this.loadFitness()
         },
 
 
         /*
-         * 新增身体数据
-         */
-        async createBodyMetric(
-
-          metric: BodyMetric
-        ) {
-
-
-          await addBodyMetric(
-            metric
-          )
-
-
-          this.bodyMetrics.push(
-            metric
-          )
-        },
-
+        删除训练计划
+        */
         async removePlan(
           id: string
         ) {
 
           await deleteFitnessPlan(id)
-
-
           await this.loadFitness()
-
-        },
+        }
       }
     }
   )

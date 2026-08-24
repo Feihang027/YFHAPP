@@ -7,6 +7,14 @@
 健身计划
 </h1>
 
+<el-button type="success"@click="router.push('/fitness-dashboard')">
+数据分析
+</el-button>
+
+<el-button type="success" @click="router.push('/body-metrics')">
+身体数据
+</el-button>
+
 
 <el-button  type="primary" @click="createVisible=true">
 新增训练计划
