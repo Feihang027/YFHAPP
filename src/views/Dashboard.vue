@@ -56,7 +56,7 @@ YFHAPP 首页
 
 <div class="number">
 
-{{dashboard.mediaCount}}
+{{dashboard.summary.mediaCount}}
 
 </div>
 
@@ -77,7 +77,7 @@ YFHAPP 首页
 
 <div class="number">
 
-{{dashboard.projectCount}}
+{{dashboard.summary.projectCount}}
 
 </div>
 </el-card>
@@ -153,19 +153,49 @@ YFHAPP 首页
 <div v-for="fitness in dashboard.todayFitnessList" :key="fitness.id">
 
 
+<div class="fitness-item">
+
+
 <h3>
-{{fitness.name}}
+🏋 {{fitness.name}}
 </h3>
 
 
 <p>
-训练时长：{{fitness.duration}}分钟
+⏱
+训练时长：
+{{fitness.duration}}
+分钟
 </p>
 
 
 <p>
-状态：{{fitness.status}}
+
+状态：
+
+<el-tag v-if="fitness.status==='completed'" type="success">
+已完成
+</el-tag>
+
+
+<el-tag v-else type="warning">
+待训练
+</el-tag>
+
 </p>
+
+
+<el-button v-if="fitness.status!=='completed'" type="success" @click="startFitness(fitness)">
+开始训练
+</el-button>
+
+
+<el-button v-else disabled>
+已完成
+</el-button>
+
+</div>
+
 
 <h4>
 训练动作
@@ -193,26 +223,30 @@ YFHAPP 首页
 <div v-else>
 今天没有训练计划
 </div>
-
 </el-card>
 
+
 <el-card>
+
 <h2>
 健身概览
 </h2>
+
 <p>
-累计训练：{{fitnessStore.records.length}}次
+累计训练：{{dashboard.fitnessSummary.totalRecords}} 次
 </p>
 
 
 <p>
-累计训练时长：{{totalDuration}}分钟
+累计训练时长：{{dashboard.fitnessSummary.totalDuration}} 分钟
 </p>
 
 
 <p>
-当前体重：{{latestWeight}}kg
+当前体重：{{dashboard.fitnessSummary.latestWeight}} kg
 </p>
+
+
 </el-card>
 
 
@@ -256,7 +290,7 @@ YFHAPP 首页
 
 
 <div class="number">
-{{dashboard.fitnessCount}}
+{{dashboard.summary.fitnessCount}}
 </div>
 
 
@@ -277,7 +311,7 @@ YFHAPP 首页
 
 
 <div class="number">
-{{dashboard.dietCount}}
+{{dashboard.summary.dietCount}}
 </div>
 
 
@@ -384,48 +418,25 @@ useDashboardStore
 }
 from "@/stores/dashboardStore"
 
-import {
-useFitnessStore
-} from "@/stores/fitnessStore"
-
 const dashboard = useDashboardStore()
 
 const router = useRouter()
-
-const fitnessStore = useFitnessStore()
-
-
-const totalDuration = computed(()=>{
-
-return fitnessStore.records.reduce(
-
-(sum,item)=>{return sum + item.duration},0)
-})
-
-
-const latestWeight = computed(()=>{
-if(
-fitnessStore.bodyMetrics.length===0
-){
-
-return 0
-
-}
-return fitnessStore.bodyMetrics[
-fitnessStore.bodyMetrics.length - 1
-].weight
-
-
-})
 
 function go(path:string){
 router.push(path)
 }
 
+function startFitness(plan:any){
+router.push({
+path:"/fitness-record",
+query:{
+planId:plan.id
+}
+})
+}
+
 
 onMounted(async()=>{
-
-await fitnessStore.loadFitness()
 
 await dashboard.loadDashboard()
 })
@@ -461,6 +472,17 @@ margin-top:40px;
 width:100%;
 height:50px;
 font-size:16px;
+}
+
+.fitness-item{
+padding:20px;
+border-bottom:1px solid #eee;
+}
+
+
+.fitness-item .el-button{
+width:120px;
+height:40px;
 }
 
 </style>

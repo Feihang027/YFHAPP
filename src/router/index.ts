@@ -12,6 +12,8 @@ import FitnessRecord from '../views/FitnessRecord.vue'
 import FitnessHistory from '../views/FitnessHistory.vue'
 import FitnessDashboard from '../views/FitnessDashboard.vue'
 import BodyMetrics from '../views/BodyMetrics.vue'
+import FitnessCenter from '../views/FitnessCenter.vue'
+import FitnessDetail from '../views/FitnessDetail.vue'
 import Diet from '../views/Diet.vue'
 import Games from '../views/Games.vue'
 
@@ -46,6 +48,10 @@ const router = createRouter({
         },
         {
           path: 'fitness',
+          component: FitnessCenter
+        },
+        {
+          path: 'fitness-plan',
           component: Fitness
         },
         {
@@ -63,6 +69,10 @@ const router = createRouter({
         {
           path: 'body-metrics',
           component: BodyMetrics
+        },
+        {
+          path: 'fitness-detail',
+          component: FitnessDetail
         },
         {
           path: 'diet',

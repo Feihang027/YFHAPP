@@ -28,89 +28,111 @@
 训练计划列表
 </h2>
 
-<div v-for="plan in fitnessStore.plans"  :key="plan.id">
+
+<el-button-group>
+<el-button @click="statusFilter='all'">
+全部
+</el-button>
+
+<el-button @click="statusFilter='pending'">
+待训练
+</el-button>
+
+<el-button @click="statusFilter='completed'">
+已完成
+</el-button>
 
 
-<h3>
+</el-button-group>
+
+<el-row :gutter="20">
+
+<el-col :span="8" v-for="plan in filteredPlans" :key="plan.id">
+
+
+
+<el-card class="fitness-card">
+<div class="card-header">
+<h2>
 {{plan.name}}
-</h3>
+</h2>
 
 
-<p>
-星期：{{plan.weekday}}
-</p>
-
-
-<p>
-日期：{{plan.date}}
-</p>
-
-<p>
-训练时长：{{plan.duration}} 分钟
-</p>
-
-<p>
-状态：{{plan.status}}
-</p>
-
-<h4>
-训练动作
-</h4>
-
-<div v-for="exercise in plan.exercises"
-:key="exercise.name">
-
-<p>
-动作：{{exercise.name}}
-</p>
-
-
-<p>
-重量：{{exercise.weight}} kg
-</p>
-
-
-<p>
-组数：{{exercise.sets}} 组
-</p>
-
-
-<p>
-次数：{{exercise.reps}} 次
-</p>
-
-
-<p>
-休息：{{exercise.restTime}} 秒
-</p>
-
-
-<hr>
-
-
-</div>
-
-<el-button type="primary" size="small" @click="openEdit(plan)">
-编辑计划
-</el-button>
-
-<el-button v-if="plan.status !== 'completed'"type="success" @click="startTraining(plan)">
-开始训练
-</el-button>
-
-<el-tag v-else type="success">
+<el-tag v-if="plan.status==='completed'"type="success">
 已完成
 </el-tag>
 
-<!-- 删除计划按钮 -->
 
-<el-button type="danger"size="small" @click="removePlan(plan.id)">
-删除计划
-</el-button>
+<el-tag v-else type="warning">
+待训练
+</el-tag>
 
-<hr>
 
 </div>
+
+
+<p>
+⏱ 时长：{{plan.duration}} 分钟
+</p>
+
+<p>
+📅 日期：{{plan.date}}
+</p>
+
+
+
+<h3>
+训练动作
+</h3>
+
+<el-table :data="plan.exercises"size="small"
+>
+<el-table-column prop="name"label="动作"/>
+
+<el-table-column prop="weight"label="重量"/>
+
+<el-table-column prop="sets"label="组数"/>
+
+<el-table-column prop="reps"label="次数"/>
+
+</el-table>
+
+
+
+<div style="margin-top:20px">
+
+<div class="actions">
+
+
+<el-button type="primary" size="small"@click="openEdit(plan)">
+编辑
+</el-button>
+
+<el-button v-if="plan.status!=='completed'"type="success"size="small"@click="startTraining(plan)">
+开始训练
+</el-button>
+
+<el-button type="danger"size="small" @click="removePlan(plan.id)">
+删除
+</el-button>
+
+<el-button type="info" @click="viewDetail(plan)">
+查看详情
+</el-button>
+
+
+</div>
+
+</div>
+
+
+</el-card>
+
+
+</el-col>
+
+
+</el-row>
 
 <!-- 编辑训练计划弹窗 -->
 
@@ -280,7 +302,8 @@ from "vue-router"
 
 import {
 onMounted,
-ref
+ref,
+computed
 }
 from "vue"
 
@@ -296,7 +319,10 @@ const router = useRouter()
 
 const createVisible = ref(false)
 const editVisible = ref(false)
-const editPlanData = ref<any>({})
+const editPlanData = ref<any>({})  
+const statusFilter = ref("all")
+
+
 
 onMounted(()=>{
 fitnessStore.loadFitness()
@@ -335,6 +361,15 @@ restTime:60
 }
 ]
 
+})
+
+const filteredPlans = computed(()=>{
+if(statusFilter.value==="all"){
+return fitnessStore.plans
+}
+return fitnessStore.plans.filter(
+item=>item.status===statusFilter.value
+)
 })
 
 
@@ -376,9 +411,35 @@ updatedAt:new Date().toISOString()
 
 }
 
+
+function resetCreateForm(){
+createPlanData.value={
+name:"",
+date:new Date().toISOString().slice(0,10),
+duration:60,
+status:"pending",
+weekday:1,
+exercises:[
+
+{
+name:"",
+
+weight:0,
+
+sets:0,
+
+reps:0,
+
+restTime:60
+}
+]
+}
+}
+
 await fitnessStore.createPlan(plan)
 
 createVisible.value=false
+resetCreateForm()
 await fitnessStore.loadFitness()
 }
 
@@ -460,5 +521,36 @@ planId:plan.id
 })
 }
 
+function viewDetail(plan:any){
+router.push({
+path:"/fitness-detail",
+query:{
+id:plan.id
+}
+})
+}
+
 
 </script>
+
+
+<style scoped>
+.fitness-card{
+margin-bottom:20px;
+
+}
+
+.card-header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+.actions{
+margin-top:20px;
+display:flex;
+gap:10px;
+}
+
+
+</style>
