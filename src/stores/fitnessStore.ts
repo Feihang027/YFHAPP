@@ -24,6 +24,7 @@ import {
   getFitnessRecords,
   addBodyMetric,
   getBodyMetrics,
+  deleteFitnessRecord,
   updateBodyMetric as updateBodyMetricService,
   deleteBodyMetric as deleteBodyMetricService
 } from "@/services/fitnessService"
@@ -139,6 +140,13 @@ export const useFitnessStore =
         ) {
 
           await deleteFitnessPlan(id)
+          await this.loadFitness()
+        },
+
+        async removeRecord(
+          id: string
+        ) {
+          await deleteFitnessRecord(id)
           await this.loadFitness()
         }
       }

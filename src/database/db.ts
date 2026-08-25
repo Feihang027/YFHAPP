@@ -7,15 +7,11 @@ import {
 
 let dbInstance: null | IDBDatabase = null
 
-
-
 export function openDatabase(): Promise<IDBDatabase> {
-
   return new Promise((resolve, reject) => {
 
 
     if (dbInstance) {
-
       resolve(dbInstance as IDBDatabase)
       return
 
@@ -31,54 +27,33 @@ export function openDatabase(): Promise<IDBDatabase> {
 
 
     request.onupgradeneeded = () => {
-
-
       const db = request.result
 
 
-      Object.values(STORE_NAMES)
-        .forEach(storeName => {
+      Object.values(STORE_NAMES).forEach(storeName => {
+        if (
+          !db.objectStoreNames.contains(storeName)
+        ) {
 
-
-          if (
-            !db.objectStoreNames.contains(storeName)
-          ) {
-
-            db.createObjectStore(
-              storeName,
-              {
-                keyPath: "id"
-              }
-            )
-
-          }
-
-
-        })
-
-
+          db.createObjectStore(
+            storeName,
+            {
+              keyPath: "id"
+            }
+          )
+        }
+      })
     }
 
-
-
     request.onsuccess = () => {
-
       dbInstance = request.result
-
       resolve(dbInstance as IDBDatabase)
-
     }
 
 
 
     request.onerror = () => {
-
       reject(request.error)
-
     }
-
-
-
   })
-
 }

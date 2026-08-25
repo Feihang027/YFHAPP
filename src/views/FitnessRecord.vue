@@ -23,11 +23,8 @@
 
 
 <p>
-训练时长：{{plan.duration}}
-分钟
+训练时长：{{plan.duration}} 分钟
 </p>
-
-
 
 <h3>
 训练动作
@@ -69,10 +66,14 @@
 
 </div>
 
+<el-form-item label="训练备注">
+
+<el-input v-model="note" placeholder="例如：今天状态很好"/>
+
+</el-form-item>
+
 <el-button type="success"size="large"@click="finishTraining">
-
 完成训练
-
 </el-button>
 
 
@@ -124,6 +125,8 @@ const fitnessStore = useFitnessStore()
 
 
 const plan = ref<any>(null)
+  
+const note = ref("")
 
 
 onMounted(async()=>{
@@ -158,6 +161,8 @@ name:exercise.name,
 sets:exercise.sets,
 
 reps:exercise.reps,
+
+note:note.value,
 
 weight:exercise.weight
 

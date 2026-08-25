@@ -28,41 +28,28 @@
 训练时长：{{record.duration}} 分钟
 </p>
 
+<p v-if="record.note">
+备注：{{record.note}}
+</p>
+
 <h3>
 训练动作
 </h3>
 
 
 
-<div v-for="exercise in record.exercises":key="exercise.name">
+<el-table :data="record.exercises"size="small">
+<el-table-column prop="name" label="动作"/>
+<el-table-column prop="weight" label="重量"/>
+<el-table-column prop="sets" label="组数"/>
+<el-table-column prop="reps" label="次数"/>
 
 
-<p>
-动作：{{exercise.name}}
-</p>
+</el-table>
 
-
-<p>
-重量：{{exercise.weight}} kg
-</p>
-
-
-<p>
-组数：{{exercise.sets}} 组
-</p>
-
-
-<p>
-次数：{{exercise.reps}} 次
-</p>
-
-
-<hr>
-
-
-</div>
-
-
+<el-button type="danger" size="small" @click="removeRecord(record.id)">
+删除记录
+</el-button>
 
 </el-card>
 
@@ -97,12 +84,15 @@ onMounted
 from "vue"
 
 
-
 import {
 useFitnessStore
 }
 from "@/stores/fitnessStore"
 
+import {
+deleteFitnessRecord
+}
+from "@/services/fitnessService"
 
 
 const fitnessStore =useFitnessStore()
@@ -112,6 +102,14 @@ const fitnessStore =useFitnessStore()
 onMounted(()=>{
 fitnessStore.loadFitness()
 })
+
+async function removeRecord(id:string){
+
+await deleteFitnessRecord(id)
+
+await fitnessStore.loadFitness()
+
+}
 
 
 </script>
