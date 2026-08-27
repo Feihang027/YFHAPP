@@ -1,3 +1,4 @@
+```vue
 <template>
 
 <div class="history">
@@ -28,28 +29,50 @@
 训练时长：{{record.duration}} 分钟
 </p>
 
+
 <p v-if="record.note">
 备注：{{record.note}}
 </p>
+
 
 <h3>
 训练动作
 </h3>
 
 
+<el-table :data="record.exercises" size="small">
 
-<el-table :data="record.exercises"size="small">
-<el-table-column prop="name" label="动作"/>
-<el-table-column prop="weight" label="重量"/>
-<el-table-column prop="sets" label="组数"/>
-<el-table-column prop="reps" label="次数"/>
+
+<el-table-column prop="name"label="动作"/>
+
+
+<el-table-column prop="weight"label="重量"/>
+
+
+<el-table-column prop="sets"label="组数"/>
+
+
+<el-table-column prop="reps"label="次数"/>
 
 
 </el-table>
 
-<el-button type="danger" size="small" @click="removeRecord(record.id)">
+
+<div class="actions">
+
+
+<el-button type="primary" size="small"@click="viewRecord(record)">
+查看详情
+</el-button>
+
+
+<el-button type="danger" size="small"@click="removeRecord(record.id)">
 删除记录
 </el-button>
+
+
+</div>
+
 
 </el-card>
 
@@ -57,22 +80,20 @@
 </div>
 
 
-
 <div v-else>
 
 
-<el-empty description="暂无训练记录"/>
+<el-empty
+description="暂无训练记录"
+/>
 
 
 </div>
-
 
 
 </div>
 
 </template>
-
-
 
 
 <script setup lang="ts">
@@ -85,9 +106,16 @@ from "vue"
 
 
 import {
+useRouter
+}
+from "vue-router"
+
+
+import {
 useFitnessStore
 }
 from "@/stores/fitnessStore"
+
 
 import {
 deleteFitnessRecord
@@ -95,7 +123,11 @@ deleteFitnessRecord
 from "@/services/fitnessService"
 
 
-const fitnessStore =useFitnessStore()
+
+const fitnessStore = useFitnessStore()
+
+
+const router = useRouter()
 
 
 
@@ -103,11 +135,33 @@ onMounted(()=>{
 fitnessStore.loadFitness()
 })
 
-async function removeRecord(id:string){
+
+
+async function removeRecord(
+id:string
+){
 
 await deleteFitnessRecord(id)
 
 await fitnessStore.loadFitness()
+
+}
+
+
+
+function viewRecord(
+record:any
+){
+
+router.push({
+
+path:"/fitness-detail",
+
+query:{
+id:record.id
+}
+
+})
 
 }
 
@@ -122,11 +176,16 @@ padding:20px;
 }
 
 
-
 .record-card{
 margin-bottom:20px;
 }
 
 
+.actions{
+margin-top:20px;
+display:flex;
+gap:10px;
+}
 
 </style>
+```

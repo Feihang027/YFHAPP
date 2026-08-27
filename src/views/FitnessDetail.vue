@@ -1,42 +1,32 @@
+```vue
 <template>
 
 <div>
 
-
 <h1>
-训练计划详情
+训练记录详情
 </h1>
 
 
-<div v-if="plan">
+<div v-if="record">
 
 
 <el-card>
 
 
 <h2>
-{{plan.name}}
+{{record.planName}}
 </h2>
 
 
 <p>
-日期：
-{{plan.date}}
+训练日期：{{record.date}}
 </p>
 
 
 <p>
-训练时长：
-{{plan.duration}}
-分钟
+训练时长：{{record.duration}}分钟
 </p>
-
-
-<p>
-状态：
-{{plan.status}}
-</p>
-
 
 
 <h3>
@@ -44,21 +34,31 @@
 </h3>
 
 
-<el-table :data="plan.exercises">
-<el-table-column prop="name" label="动作"/>
-<el-table-column prop="weight" label="重量"/>
-<el-table-column prop="sets" label="组数"/>
-<el-table-column prop="reps"label="次数"/>
+<el-table :data="record.exercises"size="small">
+
+
+<el-table-column prop="name"label="动作"/>
+
+
+<el-table-column prop="weight"label="重量"/>
+
+
+<el-table-column prop="sets"label="组数"/>
+
+
+<el-table-column prop="reps" label="次数"/>
 
 
 </el-table>
 
 
-<br>
-<el-button type="success" v-if="plan.status!=='completed'" @click="startTraining">
-开始训练
-</el-button>
+<p v-if="record.note">
 
+备注：
+
+{{record.note}}
+
+</p>
 
 
 </el-card>
@@ -69,7 +69,7 @@
 
 <div v-else>
 
-计划不存在
+<el-empty description="训练记录不存在"/>
 
 </div>
 
@@ -90,8 +90,7 @@ from "vue"
 
 
 import {
-useRoute,
-useRouter
+useRoute
 }
 from "vue-router"
 
@@ -105,39 +104,32 @@ from "@/stores/fitnessStore"
 
 const route = useRoute()
 
-const router = useRouter()
-
 const fitnessStore = useFitnessStore()
 
-
-const plan = ref<any>(null)
+const record = ref<any>(null)
 
 
 
 onMounted(async()=>{
+
+
 await fitnessStore.loadFitness()
 
 
-const id = route.query.id
+const id = route.query.id as string
 
 
-plan.value = fitnessStore.plans.find(item=>item.id===id)
-
-})
-
-
-
-function startTraining(){
-
-router.push({
-
-path:"/fitness-record",
-
-query:{
-planId:plan.value.id
-}
-})
-}
+record.value = fitnessStore.records.find(item => item.id === id)})
 
 
 </script>
+
+
+<style scoped>
+
+div{
+box-sizing:border-box;
+}
+
+</style>
+```
