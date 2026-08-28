@@ -67,9 +67,7 @@
 </div>
 
 <el-form-item label="训练备注">
-
-<el-input v-model="note" placeholder="例如：今天状态很好"/>
-
+<el-input v-model="note"type="textarea":rows="3"placeholder="记录一下本次训练的状态、感受等"/>
 </el-form-item>
 
 <el-button type="success"size="large"@click="finishTraining">
@@ -142,8 +140,6 @@ router.push("/fitness")
 })
 
 
-
-
 async function finishTraining(){
 const record = {
 id: Date.now().toString(),
@@ -155,21 +151,14 @@ duration:plan.value.duration,
 
 exercises:plan.value.exercises.map(
 (exercise:any)=>({
-
 name:exercise.name,
-
 sets:exercise.sets,
-
 reps:exercise.reps,
-
 note:note.value,
-
 weight:exercise.weight
-
 })
 ),
-
-note:"",
+note: note.value,
 
 createdAt:new Date().toISOString()}
 

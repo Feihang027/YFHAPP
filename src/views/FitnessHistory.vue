@@ -12,7 +12,7 @@
 <div v-if="fitnessStore.records.length">
 
 
-<el-card v-for="record in fitnessStore.records" :key="record.id"class="record-card">
+<el-card v-for="record in sortedRecords" :key="record.id"class="record-card">
 
 
 <h2>
@@ -100,7 +100,8 @@ description="暂无训练记录"
 
 
 import {
-onMounted
+onMounted,
+computed
 }
 from "vue"
 
@@ -125,11 +126,17 @@ from "@/services/fitnessService"
 
 
 const fitnessStore = useFitnessStore()
-
-
 const router = useRouter()
 
+const sortedRecords = computed(() => {
 
+  return [...fitnessStore.records].sort((a, b) => {
+
+    return b.date.localeCompare(a.date)
+
+  })
+
+})
 
 onMounted(()=>{
 fitnessStore.loadFitness()

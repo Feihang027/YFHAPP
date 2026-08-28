@@ -182,10 +182,6 @@ export function updateFitnessRecord(
 
 }
 
-
-
-
-
 // 删除训练记录
 
 export function deleteFitnessRecord(
