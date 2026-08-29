@@ -570,125 +570,54 @@ createdAt:string
 
 
 }
-6. 文件结构
+```
+
+# 6. 文件结构
+
 src
-
 ├── views
-
 │
 ├── Fitness.vue
-
 ├── FitnessRecord.vue
-
 ├── FitnessHistory.vue
-
 ├── FitnessDetail.vue
-
 ├── FitnessDashboard.vue
-
 ├── BodyMetrics.vue
-
-
 ├── components
-
 │
 └── layout
-
-    ├── FitnessTrendChart.vue
-
-    └── BodyTrendChart.vue
-
-
+├── FitnessTrendChart.vue
+└── BodyTrendChart.vue
 ├── stores
-
 │
 └── fitnessStore.ts
-
-
 ├── services
-
 │
 └── fitnessService.ts
-
-
 ├── models
-
 │
 ├── FitnessPlan.ts
-
 ├── FitnessRecord.ts
-
 └── BodyMetric.ts
-
-
 ├── database
-
 │
-└── IndexedDB相关代码
+└── IndexedDB 相关代码
 
-7. 已完成功能
+# 7. 已完成功能
 
 目前 Fitness 模块已经实现：
-
 ✅ 创建训练计划
-
 ✅ 修改训练计划
-
 ✅ 删除训练计划
-
 ✅ 开始训练
-
 ✅ 完成训练
-
 ✅ 自动生成训练记录
-
 ✅ 查看训练历史
-
 ✅ 删除训练记录
-
 ✅ 查看训练详情
-
 ✅ 身体数据新增
-
 ✅ 身体数据修改
-
 ✅ 身体数据删除
-
 ✅ 身体趋势分析
-
 ✅ 健身 Dashboard 数据统计
-
 ✅ ECharts 数据可视化
-
-8. 后续优化方向
-
-未来可以增加：
-
-训练模板
-
-例如：
-
-胸部训练模板
-
-腿部训练模板
-
-背部训练模板
-AI训练建议
-
-结合 AI：
-
-根据历史训练生成建议
-推荐训练计划
-分析训练效果
-数据同步
-
-未来可以增加：
-
-云端同步
-多设备访问
-社交功能
-
-例如：
-
-分享训练记录
-健身目标管理
