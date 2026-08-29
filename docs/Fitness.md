@@ -573,51 +573,48 @@ createdAt:string
 ```
 
 # 6. 文件结构
+```
 
 src
 ├── views
-│
-├── Fitness.vue
-├── FitnessRecord.vue
-├── FitnessHistory.vue
-├── FitnessDetail.vue
-├── FitnessDashboard.vue
-├── BodyMetrics.vue
+│   ├── Fitness.vue
+│   ├── FitnessRecord.vue
+│   ├── FitnessHistory.vue
+│   ├── FitnessDetail.vue
+│   ├── FitnessDashboard.vue
+│   └── BodyMetrics.vue
 ├── components
-│
-└── layout
-├── FitnessTrendChart.vue
-└── BodyTrendChart.vue
+│   └── layout
+│       ├── FitnessTrendChart.vue
+│       └── BodyTrendChart.vue
 ├── stores
-│
-└── fitnessStore.ts
+│   └── fitnessStore.ts
 ├── services
-│
-└── fitnessService.ts
+│   └── fitnessService.ts
 ├── models
-│
-├── FitnessPlan.ts
-├── FitnessRecord.ts
-└── BodyMetric.ts
-├── database
-│
+│   ├── FitnessPlan.ts
+│   ├── FitnessRecord.ts
+│   └── BodyMetric.ts
+└── database
 └── IndexedDB 相关代码
 
-# 7. 已完成功能
+```
 
+# 7. 已完成功能
 目前 Fitness 模块已经实现：
-✅ 创建训练计划
-✅ 修改训练计划
-✅ 删除训练计划
-✅ 开始训练
-✅ 完成训练
-✅ 自动生成训练记录
-✅ 查看训练历史
-✅ 删除训练记录
-✅ 查看训练详情
-✅ 身体数据新增
-✅ 身体数据修改
-✅ 身体数据删除
-✅ 身体趋势分析
-✅ 健身 Dashboard 数据统计
-✅ ECharts 数据可视化
+- ✅ 创建训练计划
+- ✅ 修改训练计划
+- ✅ 删除训练计划
+- ✅ 开始训练
+- ✅ 完成训练
+- ✅ 自动生成训练记录
+- ✅ 查看训练历史
+- ✅ 删除训练记录
+- ✅ 查看训练详情
+- ✅ 身体数据新增
+- ✅ 身体数据修改
+- ✅ 身体数据删除
+- ✅ 身体趋势分析
+- ✅ 健身 Dashboard 数据统计
+- ✅ ECharts 数据可视化
+```
