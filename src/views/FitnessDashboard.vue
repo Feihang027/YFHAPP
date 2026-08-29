@@ -7,26 +7,20 @@
 健身数据分析
 </h1>
 
-<!--训练统计 -->
+
+
+<!--训练统计-->
 
 <el-row :gutter="20">
-
-
 <el-col :span="8">
-
 <el-card>
-
-
 <h3>
 累计训练
 </h3>
-
-
 <div class="number">
 {{totalCount}}
+
 </div>
-
-
 </el-card>
 </el-col>
 
@@ -38,35 +32,29 @@
 累计时长
 </h3>
 
+
+<div class="number">
+{{totalDuration}}
+分钟
+
+</div>
+</el-card>
+</el-col>
+</el-row>
+
 <el-card>
+
 
 <h2>
 训练趋势
 </h2>
+
 
 <FitnessTrendChart :records="fitnessStore.records"/>
 
 
 </el-card>
 
-
-<div class="number">
-
-{{totalDuration}}
-
-分钟
-
-</div>
-
-
-</el-card>
-
-
-</el-col>
-
-
-
-</el-row>
 
 <el-card>
 

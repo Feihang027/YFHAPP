@@ -144,14 +144,34 @@ fitnessStore.loadFitness()
 
 
 
-async function removeRecord(
-id:string
-){
+import {
+ElMessageBox,
+ElMessage
+} from "element-plus"
+
+
+
+async function removeRecord(id:string){
+try{
+await ElMessageBox.confirm(
+"删除后无法恢复，确认删除？",
+"提示",
+{
+confirmButtonText:"确认",
+cancelButtonText:"取消",
+type:"warning"
+}
+)
+
 
 await deleteFitnessRecord(id)
-
 await fitnessStore.loadFitness()
+ElMessage.success(
+"删除成功"
+)
+}catch(e){
 
+}
 }
 
 
