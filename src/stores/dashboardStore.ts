@@ -28,7 +28,7 @@ import {
 
 
 import {
-  getDevelopments
+  getDevelopmentProjects
 } from "@/services/developmentService"
 
 
@@ -143,88 +143,40 @@ export const useDashboardStore =
 
         async loadDashboard() {
 
-
-
           // =====================
           // 获取所有模块数据
           // =====================
 
+          const tasks = await getTasks()
 
-          const tasks =
-            await getTasks()
+          const medias = await getMedias()
 
+          const fitness = await getFitnessPlans()
 
+          const fitnessRecords = await getFitnessRecords()
 
-          const medias =
-            await getMedias()
+          const bodyMetrics = await getBodyMetrics()
 
-
-
-          const fitness =
-            await getFitnessPlans()
+          const diets = await getDietList()
 
 
-
-          const fitnessRecords =
-            await getFitnessRecords()
-
-
-
-          const bodyMetrics =
-            await getBodyMetrics()
-
-
-
-          const diets =
-            await getDietList()
-
-
-
-          const projects =
-            await getDevelopments()
-
-
-
-
+          const projects = await getDevelopmentProjects()
 
           // =====================
           // 总数量统计
           // =====================
+          this.summary.taskCount = tasks.length
 
+          this.summary.mediaCount = medias.length
+          this.summary.fitnessCount = fitness.length
+          this.summary.dietCount = diets.length
 
-          this.summary.taskCount =
-            tasks.length
-
-
-
-          this.summary.mediaCount =
-            medias.length
-
-
-
-          this.summary.fitnessCount =
-            fitness.length
-
-
-
-          this.summary.dietCount =
-            diets.length
-
-
-
-          this.summary.projectCount =
-            projects.length
-
-
-
-
+          this.summary.projectCount = projects.length
 
 
           // =====================
           // 今天日期
           // =====================
-
-
           const today =
             new Date()
               .toISOString()
@@ -232,13 +184,9 @@ export const useDashboardStore =
 
 
 
-
-
           // =====================
           // 今日任务
           // =====================
-
-
           this.todayTasks =
             tasks.filter(
               task => task.date === today
@@ -316,39 +264,21 @@ export const useDashboardStore =
             projects.slice(0, 3)
 
 
-
-
-
-
-
           // =====================
           // 健身统计
           // =====================
 
 
-          this.fitnessSummary.totalRecords =
-            fitnessRecords.length
-
-
-
-
+          this.fitnessSummary.totalRecords = fitnessRecords.length
 
           this.fitnessSummary.totalDuration =
             fitnessRecords.reduce(
-
               (sum, item) => {
 
                 return sum + item.duration
-
               },
-
               0
-
             )
-
-
-
-
 
 
           if (bodyMetrics.length) {

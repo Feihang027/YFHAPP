@@ -24,8 +24,6 @@ export function openDatabase(): Promise<IDBDatabase> {
         DB_VERSION
       )
 
-
-
     request.onupgradeneeded = () => {
       const db = request.result
 
