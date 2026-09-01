@@ -6,11 +6,9 @@ import {
 } from "@/services/taskService"
 
 
-
 import {
   getMedias
 } from "@/services/mediaService"
-
 
 
 import {
@@ -20,18 +18,14 @@ import {
 } from "@/services/fitnessService"
 
 
-
 import {
   getDietList
 } from "@/services/dietService"
 
 
-
 import {
   getDevelopmentProjects
 } from "@/services/developmentService"
-
-
 
 
 export const useDashboardStore =
@@ -42,9 +36,7 @@ export const useDashboardStore =
 
     {
 
-
       state: () => ({
-
 
         // =====================
         // 总数据统计
@@ -52,24 +44,17 @@ export const useDashboardStore =
 
         summary: {
 
-
           taskCount: 0,
-
 
           mediaCount: 0,
 
-
           fitnessCount: 0,
-
 
           dietCount: 0,
 
-
           projectCount: 0
 
-
         },
-
 
 
         // =====================
@@ -78,13 +63,9 @@ export const useDashboardStore =
 
         todayTasks: [] as any[],
 
-
-
         completionRate: 0,
 
-
         completedToday: 0,
-
 
 
         // =====================
@@ -94,25 +75,19 @@ export const useDashboardStore =
         todayFitnessList: [] as any[],
 
 
-
         // =====================
         // 健身统计
         // =====================
 
         fitnessSummary: {
 
-
           totalRecords: 0,
-
 
           totalDuration: 0,
 
-
           latestWeight: 0
 
-
         },
-
 
 
         // =====================
@@ -122,24 +97,20 @@ export const useDashboardStore =
         todayDiet: null as any,
 
 
-
         // =====================
         // 最近项目
         // =====================
 
         recentProjects: [] as any[]
 
-
-
       }),
-
-
-
 
 
       actions: {
 
-
+        // =====================
+        // 加载 Dashboard 数据
+        // =====================
 
         async loadDashboard() {
 
@@ -147,64 +118,92 @@ export const useDashboardStore =
           // 获取所有模块数据
           // =====================
 
-          const tasks = await getTasks()
-
-          const medias = await getMedias()
-
-          const fitness = await getFitnessPlans()
-
-          const fitnessRecords = await getFitnessRecords()
-
-          const bodyMetrics = await getBodyMetrics()
-
-          const diets = await getDietList()
+          const tasks =
+            await getTasks()
 
 
-          const projects = await getDevelopmentProjects()
+          const medias =
+            await getMedias()
+
+
+          const fitness =
+            await getFitnessPlans()
+
+
+          const fitnessRecords =
+            await getFitnessRecords()
+
+
+          const bodyMetrics =
+            await getBodyMetrics()
+
+
+          const diets =
+            await getDietList()
+
+
+          // =====================
+          // Development 项目
+          // =====================
+
+          const projects =
+            await getDevelopmentProjects()
+
 
           // =====================
           // 总数量统计
           // =====================
-          this.summary.taskCount = tasks.length
 
-          this.summary.mediaCount = medias.length
-          this.summary.fitnessCount = fitness.length
-          this.summary.dietCount = diets.length
+          this.summary.taskCount =
+            tasks.length
 
-          this.summary.projectCount = projects.length
+
+          this.summary.mediaCount =
+            medias.length
+
+
+          this.summary.fitnessCount =
+            fitness.length
+
+
+          this.summary.dietCount =
+            diets.length
+
+
+          this.summary.projectCount =
+            projects.length
 
 
           // =====================
           // 今天日期
           // =====================
+
           const today =
             new Date()
               .toISOString()
               .slice(0, 10)
 
 
-
           // =====================
           // 今日任务
           // =====================
+
           this.todayTasks =
             tasks.filter(
-              task => task.date === today
+              task =>
+                task.date === today
             )
-
-
 
 
           const completed =
             this.todayTasks.filter(
-              task => task.status === "completed"
+              task =>
+                task.status === "completed"
             ).length
-
 
 
           this.completedToday =
             completed
-
 
 
           this.completionRate =
@@ -219,29 +218,20 @@ export const useDashboardStore =
               )
 
 
-
-
-
-
           // =====================
           // 今日训练
           // =====================
 
-
           this.todayFitnessList =
             fitness.filter(
-              plan => plan.date === today
+              plan =>
+                plan.date === today
             )
-
-
-
-
 
 
           // =====================
           // 今日饮食
           // =====================
-
 
           this.todayDiet =
             diets.length > 0
@@ -251,14 +241,9 @@ export const useDashboardStore =
               null
 
 
-
-
-
-
           // =====================
           // 最近项目
           // =====================
-
 
           this.recentProjects =
             projects.slice(0, 3)
@@ -268,42 +253,34 @@ export const useDashboardStore =
           // 健身统计
           // =====================
 
+          this.fitnessSummary.totalRecords =
+            fitnessRecords.length
 
-          this.fitnessSummary.totalRecords = fitnessRecords.length
 
           this.fitnessSummary.totalDuration =
             fitnessRecords.reduce(
               (sum, item) => {
 
                 return sum + item.duration
+
               },
               0
             )
 
 
-          if (bodyMetrics.length) {
+          // =====================
+          // 最新体重
+          // =====================
 
+          if (bodyMetrics.length) {
 
             this.fitnessSummary.latestWeight =
 
               bodyMetrics[
                 bodyMetrics.length - 1
-              ]
-                .weight
-
-
+              ].weight
           }
-
-
-
         }
-
-
-
       }
-
-
-
     }
-
   )

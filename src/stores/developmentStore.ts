@@ -177,6 +177,38 @@ export const useDevelopmentStore =
           await this.loadDevelopment()
         },
 
+        async createTestFeature() {
+
+          if (this.projects.length === 0) {
+            return
+          }
+
+          const feature: DevelopmentFeature = {
+
+            id: Date.now().toString(),
+
+            projectId: this.projects[0].id,
+
+            name: "测试功能",
+
+            description: "测试需求",
+
+            priority: "medium",
+
+            status: "todo",
+
+            createdAt: new Date().toISOString(),
+
+            updatedAt: new Date().toISOString()
+
+          }
+
+          await addDevelopmentFeature(feature)
+
+          await this.loadDevelopment()
+
+        },
+
 
         async removeBug(
           id: string
