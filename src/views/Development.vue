@@ -22,6 +22,10 @@
           新增功能
         </el-button>
 
+        <el-button type="primary" @click="openBugCreate">
+          新增 Bug
+        </el-button>
+
       </div>
 
     </div>
@@ -69,7 +73,7 @@
               {{ project.name }}
             </h2>
 
-            <el-tag>
+            <el-tag :type="getProjectStatusTagType(project.status)">
               {{ getStatusText(project.status) }}
             </el-tag>
 
@@ -174,7 +178,7 @@
             </el-button>
 
 
-            <el-button type="danger" size="small"@click="removeProject(project.id)">
+            <el-button type="danger" size="small" @click="removeProject(project.id)">
               删除
             </el-button>
 
@@ -252,7 +256,7 @@
         <el-table-column label="状态">
           <template #default="scope">
 
-            <el-tag>
+            <el-tag :type="getFeatureStatusTagType(scope.row.status)">
               {{ getFeatureStatusText(scope.row.status) }}
             </el-tag>
 
@@ -266,7 +270,97 @@
               编辑
             </el-button>
             
-            <el-button type="danger"size="small" @click="removeFeature(scope.row.id)">
+            <el-button type="danger" size="small" @click="removeFeature(scope.row.id)">
+              删除
+            </el-button>
+          </template>
+        </el-table-column>
+
+      </el-table>
+
+    </el-card>
+
+
+    <!-- =========================
+         Bug 管理
+    ========================== -->
+
+    <el-card class="section-card">
+
+      <template #header>
+
+        <div class="card-header">
+
+          <span>
+            Bug 管理
+          </span>
+
+          <span>
+            共 {{ store.bugs.length }} 个
+          </span>
+
+        </div>
+
+      </template>
+
+
+      <!-- 没有 Bug -->
+
+      <el-empty v-if="store.bugs.length === 0" description="暂无 Bug 记录"/>
+
+
+      <!-- 有 Bug -->
+
+      <el-table v-else :data="store.bugs" border>
+
+        <el-table-column prop="title" label="Bug 标题"/>
+
+
+        <el-table-column prop="description" label="描述" />
+
+
+        <el-table-column label="所属项目">
+
+          <template #default="scope">
+
+            {{ getProjectName(scope.row.projectId) }}
+
+          </template>
+
+        </el-table-column>
+
+
+        <el-table-column label="优先级">
+
+          <template #default="scope">
+
+            <el-tag :type="getBugPriorityTagType(scope.row.priority)">
+              {{ getBugPriorityText(scope.row.priority) }}
+            </el-tag>
+
+          </template>
+
+        </el-table-column>
+
+
+        <el-table-column label="状态">
+          <template #default="scope">
+
+            <el-tag :type="getBugStatusTagType(scope.row.status)">
+              {{ getBugStatusText(scope.row.status) }}
+            </el-tag>
+
+          </template>
+
+        </el-table-column>
+
+        <el-table-column label="操作" width="150">
+          <template #default="scope">
+            <el-button type="primary" size="small" @click="editBug(scope.row)">
+              编辑
+            </el-button>
+            
+            <el-button type="danger" size="small" @click="removeBug(scope.row.id)">
               删除
             </el-button>
           </template>
@@ -300,7 +394,7 @@
 
         <el-form-item label="项目描述">
 
-          <el-input v-model="form.description" type="textarea":rows="3"placeholder="请输入项目描述"/>
+          <el-input v-model="form.description" type="textarea" :rows="3" placeholder="请输入项目描述"/>
 
         </el-form-item>
 
@@ -318,13 +412,17 @@
 
         <el-form-item label="项目状态">
 
-          <el-select v-model="form.status" placeholder="请选择项目状态"style="width: 100%">
+          <el-select v-model="form.status" placeholder="请选择项目状态" style="width: 100%">
 
             <el-option label="规划中" value="planning"/>
 
             <el-option label="开发中" value="developing" />
 
+            <el-option label="测试中" value="testing" />
+
             <el-option label="已完成" value="completed"/>
+
+            <el-option label="已归档" value="archived"/>
 
           </el-select>
 
@@ -404,10 +502,10 @@
 
 
     <!-- =========================
-         新增功能弹窗
+         新增 / 编辑功能弹窗
     ========================== -->
 
-    <el-dialog v-model="featureDialogVisible" title="新增功能" width="500px">
+    <el-dialog v-model="featureDialogVisible" :title="editingFeatureId ? '编辑功能' : '新增功能'" width="500px">
       <el-form label-width="80px" >
         <!-- 所属项目 -->
         <el-form-item label="所属项目" >
@@ -464,7 +562,10 @@
 
         <el-form-item label="状态">
           <el-select v-model="featureForm.status" style="width: 100%">
-          <el-option label="待处理" value="todo"/>
+            <el-option label="待处理" value="todo"/>
+            <el-option label="开发中" value="developing"/>
+            <el-option label="测试中" value="testing"/>
+            <el-option label="已完成" value="completed"/>
           </el-select>
         
         </el-form-item>
@@ -481,7 +582,99 @@
         </el-button>
 
 
-        <el-button type="primary"@click="saveFeature">
+        <el-button type="primary" @click="saveFeature">
+          保存
+        </el-button>
+
+      </template>
+
+    </el-dialog>
+
+
+    <!-- =========================
+         新增 / 编辑 Bug 弹窗
+    ========================== -->
+
+    <el-dialog v-model="bugDialogVisible" :title="editingBugId ? '编辑 Bug' : '新增 Bug'" width="500px">
+      <el-form label-width="80px">
+        <!-- 所属项目 -->
+        <el-form-item label="所属项目">
+          <el-select v-model="bugForm.projectId" style="width: 100%" placeholder="请选择所属项目">
+
+            <el-option v-for="project in store.projects"
+              :key="project.id"
+              :label="project.name"
+              :value="project.id"
+            />
+
+          </el-select>
+
+        </el-form-item>
+
+
+        <!-- Bug 标题 -->
+
+        <el-form-item label="Bug 标题">
+          <el-input v-model="bugForm.title" placeholder="请输入 Bug 标题"/>
+        </el-form-item>
+
+
+        <!-- 描述 -->
+
+        <el-form-item label="描述">
+
+          <el-input v-model="bugForm.description" type="textarea"
+            :rows="3"
+            placeholder="请输入 Bug 描述、复现步骤等"
+          />
+
+        </el-form-item>
+
+
+        <!-- 优先级 -->
+
+        <el-form-item label="优先级">
+
+          <el-select v-model="bugForm.priority" style="width: 100%">
+
+            <el-option label="低" value="low" />
+
+            <el-option label="中" value="medium" />
+
+            <el-option label="高" value="high"/>
+
+            <el-option label="严重" value="critical"/>
+
+          </el-select>
+
+        </el-form-item>
+
+
+        <!-- 状态 -->
+
+        <el-form-item label="状态">
+          <el-select v-model="bugForm.status" style="width: 100%">
+            <el-option label="未处理" value="open"/>
+            <el-option label="处理中" value="processing"/>
+            <el-option label="已解决" value="resolved"/>
+            <el-option label="已关闭" value="closed"/>
+          </el-select>
+        
+        </el-form-item>
+
+      </el-form>
+
+
+      <!-- Bug 弹窗底部 -->
+
+      <template #footer>
+
+        <el-button @click="bugDialogVisible = false">
+          取消
+        </el-button>
+
+
+        <el-button type="primary" @click="saveBug">
           保存
         </el-button>
 
@@ -500,6 +693,12 @@ import {
   onMounted,
   ref
 } from "vue"
+
+
+import {
+  ElMessage,
+  ElMessageBox
+} from "element-plus"
 
 
 import {
@@ -522,8 +721,20 @@ import type {
 } from "@/models/DevelopmentFeature"
 
 import type {
-  DevelopmentFeatureStatus
+  DevelopmentFeatureStatus,
+  DevelopmentFeaturePriority
 } from "@/models/DevelopmentFeature"
+
+
+import type {
+  DevelopmentBug
+} from "@/models/DevelopmentBug"
+
+
+import type {
+  DevelopmentBugStatus,
+  DevelopmentBugPriority
+} from "@/models/DevelopmentBug"
 
 
 const store = useDevelopmentStore()
@@ -545,6 +756,15 @@ const editingId = ref<string | null>(null)
 const featureDialogVisible = ref(false)
 
 const editingFeatureId = ref<string | null>(null)
+
+
+// ==================================================
+// Bug 弹窗
+// ==================================================
+
+const bugDialogVisible = ref(false)
+
+const editingBugId = ref<string | null>(null)
 
 
 // ==================================================
@@ -608,7 +828,7 @@ interface FeatureForm {
 
   description: string
 
-  priority: "low" | "medium" | "high"
+  priority: DevelopmentFeaturePriority
 
   status: DevelopmentFeatureStatus
 
@@ -626,6 +846,40 @@ const featureForm = ref<FeatureForm>({
   priority: "medium",
 
   status: "todo"
+
+})
+
+
+// ==================================================
+// Bug 表单
+// ==================================================
+
+interface BugForm {
+
+  projectId: string
+
+  title: string
+
+  description: string
+
+  priority: DevelopmentBugPriority
+
+  status: DevelopmentBugStatus
+
+}
+
+
+const bugForm = ref<BugForm>({
+
+  projectId: "",
+
+  title: "",
+
+  description: "",
+
+  priority: "medium",
+
+  status: "open"
 
 })
 
@@ -731,6 +985,8 @@ async function saveProject() {
 
   if (!form.value.name.trim()) {
 
+    ElMessage.error("请输入项目名称")
+
     return
 
   }
@@ -750,6 +1006,8 @@ async function saveProject() {
 
 
     if (!oldProject) {
+
+      ElMessage.error("未找到要编辑的项目")
 
       return
 
@@ -798,6 +1056,8 @@ async function saveProject() {
     await store.updateProject(
       project
     )
+
+    ElMessage.success("项目更新成功")
 
   }
 
@@ -855,6 +1115,8 @@ async function saveProject() {
       project
     )
 
+    ElMessage.success("项目创建成功")
+
   }
 
 
@@ -875,9 +1137,27 @@ async function removeProject(
   id: string
 ) {
 
-  await store.removeProject(
-    id
-  )
+  try {
+
+    await ElMessageBox.confirm(
+      "确认删除该开发项目？删除后无法恢复。",
+      "删除确认",
+      {
+        confirmButtonText: "删除",
+        cancelButtonText: "取消",
+        type: "warning"
+      }
+    )
+
+    await store.removeProject(
+      id
+    )
+
+    ElMessage.success("项目删除成功")
+
+  } catch {
+    // 用户取消
+  }
 
 }
 
@@ -915,6 +1195,35 @@ function openFeatureCreate() {
 
 
 // ==================================================
+// 编辑功能
+// ==================================================
+
+function editFeature(
+  feature: DevelopmentFeature
+) {
+
+  editingFeatureId.value = feature.id
+
+  featureForm.value = {
+
+    projectId: feature.projectId,
+
+    name: feature.name,
+
+    description: feature.description,
+
+    priority: feature.priority,
+
+    status: feature.status
+
+  }
+
+  featureDialogVisible.value = true
+
+}
+
+
+// ==================================================
 // 保存功能
 // ==================================================
 
@@ -926,76 +1235,445 @@ async function saveFeature() {
 
   if (!store.projects.length) {
 
+    ElMessage.error("请先创建开发项目")
+
     return
 
   }
 
 
   // ================================================
-  // 2. 功能名称不能为空
+  // 2. 必须选择项目
+  // ================================================
+
+  if (!featureForm.value.projectId) {
+
+    ElMessage.error("请选择所属项目")
+
+    return
+
+  }
+
+
+  // ================================================
+  // 3. 功能名称不能为空
   // ================================================
 
   if (!featureForm.value.name.trim()) {
 
+    ElMessage.error("请输入功能名称")
+
     return
 
   }
 
 
   // ================================================
-  // 3. 创建功能对象
+  // 4. 编辑功能
   // ================================================
 
-  const now =
-    new Date().toISOString()
+  if (editingFeatureId.value) {
+
+    const oldFeature =
+      store.features.find(
+        item =>
+          item.id === editingFeatureId.value
+      )
 
 
-  const feature:
-    DevelopmentFeature = {
+    if (!oldFeature) {
 
-    id:
-      Date.now().toString(),
+      ElMessage.error("未找到要编辑的功能")
 
-    projectId:
-      featureForm.value.projectId,
+      return
 
-    name:
-      featureForm.value.name,
+    }
 
-    description:
-      featureForm.value.description,
 
-    priority:
-      featureForm.value.priority,
+    const feature:
+      DevelopmentFeature = {
 
-    status:
-      featureForm.value.status,
+      id:
+        oldFeature.id,
 
-    createdAt:
-      now,
+      projectId:
+        featureForm.value.projectId,
 
-    updatedAt:
-      now
+      name:
+        featureForm.value.name,
+
+      description:
+        featureForm.value.description,
+
+      priority:
+        featureForm.value.priority,
+
+      status:
+        featureForm.value.status,
+
+      createdAt:
+        oldFeature.createdAt,
+
+      updatedAt:
+        new Date().toISOString()
+
+    }
+
+
+    await store.updateFeature(
+      feature
+    )
+
+    ElMessage.success("功能更新成功")
 
   }
 
 
   // ================================================
-  // 4. 保存到 IndexedDB
+  // 5. 新增功能
   // ================================================
 
-  await store.createFeature(
-    feature
-  )
+  else {
+
+    const now =
+      new Date().toISOString()
+
+
+    const feature:
+      DevelopmentFeature = {
+
+      id:
+        Date.now().toString(),
+
+      projectId:
+        featureForm.value.projectId,
+
+      name:
+        featureForm.value.name,
+
+      description:
+        featureForm.value.description,
+
+      priority:
+        featureForm.value.priority,
+
+      status:
+        featureForm.value.status,
+
+      createdAt:
+        now,
+
+      updatedAt:
+        now
+
+    }
+
+
+    // ================================================
+    // 保存到 IndexedDB
+    // ================================================
+
+    await store.createFeature(
+      feature
+    )
+
+    ElMessage.success("功能创建成功")
+
+  }
 
 
   // ================================================
-  // 5. 关闭弹窗
+  // 关闭弹窗
   // ================================================
 
   featureDialogVisible.value = false
 
   editingFeatureId.value = null
+
+}
+
+
+// ==================================================
+// 删除功能
+// ==================================================
+
+async function removeFeature(
+  id: string
+) {
+
+  try {
+
+    await ElMessageBox.confirm(
+      "确认删除该功能需求？删除后无法恢复。",
+      "删除确认",
+      {
+        confirmButtonText: "删除",
+        cancelButtonText: "取消",
+        type: "warning"
+      }
+    )
+
+    await store.removeFeature(
+      id
+    )
+
+    ElMessage.success("功能删除成功")
+
+  } catch {
+    // 用户取消
+  }
+
+}
+
+
+// ==================================================
+// 新增 Bug
+// ==================================================
+
+function openBugCreate() {
+
+  editingBugId.value = null
+
+
+  bugForm.value = {
+
+    projectId:
+      store.projects.length > 0
+        ? store.projects[0].id
+        : "",
+
+    title: "",
+
+    description: "",
+
+    priority: "medium",
+
+    status: "open"
+
+  }
+
+
+  bugDialogVisible.value = true
+
+}
+
+
+// ==================================================
+// 编辑 Bug
+// ==================================================
+
+function editBug(
+  bug: DevelopmentBug
+) {
+
+  editingBugId.value = bug.id
+
+  bugForm.value = {
+
+    projectId: bug.projectId,
+
+    title: bug.title,
+
+    description: bug.description,
+
+    priority: bug.priority,
+
+    status: bug.status
+
+  }
+
+  bugDialogVisible.value = true
+
+}
+
+
+// ==================================================
+// 保存 Bug
+// ==================================================
+
+async function saveBug() {
+
+  // 1. 必须有项目
+
+  if (!store.projects.length) {
+
+    ElMessage.error("请先创建开发项目")
+
+    return
+
+  }
+
+
+  // 2. 必须选择项目
+
+  if (!bugForm.value.projectId) {
+
+    ElMessage.error("请选择所属项目")
+
+    return
+
+  }
+
+
+  // 3. Bug 标题不能为空
+
+  if (!bugForm.value.title.trim()) {
+
+    ElMessage.error("请输入 Bug 标题")
+
+    return
+
+  }
+
+
+  // ================================================
+  // 编辑 Bug
+  // ================================================
+
+  if (editingBugId.value) {
+
+    const oldBug =
+      store.bugs.find(
+        item =>
+          item.id === editingBugId.value
+      )
+
+
+    if (!oldBug) {
+
+      ElMessage.error("未找到要编辑的 Bug")
+
+      return
+
+    }
+
+
+    const bug:
+      DevelopmentBug = {
+
+      id:
+        oldBug.id,
+
+      projectId:
+        bugForm.value.projectId,
+
+      title:
+        bugForm.value.title,
+
+      description:
+        bugForm.value.description,
+
+      priority:
+        bugForm.value.priority,
+
+      status:
+        bugForm.value.status,
+
+      createdAt:
+        oldBug.createdAt,
+
+      updatedAt:
+        new Date().toISOString()
+
+    }
+
+
+    await store.updateBug(
+      bug
+    )
+
+    ElMessage.success("Bug 更新成功")
+
+  }
+
+
+  // ================================================
+  // 新增 Bug
+  // ================================================
+
+  else {
+
+    const now =
+      new Date().toISOString()
+
+
+    const bug:
+      DevelopmentBug = {
+
+      id:
+        Date.now().toString(),
+
+      projectId:
+        bugForm.value.projectId,
+
+      title:
+        bugForm.value.title,
+
+      description:
+        bugForm.value.description,
+
+      priority:
+        bugForm.value.priority,
+
+      status:
+        bugForm.value.status,
+
+      createdAt:
+        now,
+
+      updatedAt:
+        now
+
+    }
+
+
+    await store.createBug(
+      bug
+    )
+
+    ElMessage.success("Bug 创建成功")
+
+  }
+
+
+  // 关闭弹窗
+
+  bugDialogVisible.value = false
+
+  editingBugId.value = null
+
+}
+
+
+// ==================================================
+// 删除 Bug
+// ==================================================
+
+async function removeBug(
+  id: string
+) {
+
+  try {
+
+    await ElMessageBox.confirm(
+      "确认删除该 Bug？删除后无法恢复。",
+      "删除确认",
+      {
+        confirmButtonText: "删除",
+        cancelButtonText: "取消",
+        type: "warning"
+      }
+    )
+
+    await store.removeBug(
+      id
+    )
+
+    ElMessage.success("Bug 删除成功")
+
+  } catch {
+    // 用户取消
+  }
 
 }
 
@@ -1047,9 +1725,19 @@ function getStatusText(
       return "开发中"
 
 
+    case "testing":
+
+      return "测试中"
+
+
     case "completed":
 
       return "已完成"
+
+
+    case "archived":
+
+      return "已归档"
 
 
     default:
@@ -1062,11 +1750,55 @@ function getStatusText(
 
 
 // ==================================================
+// 项目状态标签颜色
+// ==================================================
+
+function getProjectStatusTagType(
+  status: DevelopmentProjectStatus
+) {
+
+  switch (status) {
+
+    case "planning":
+
+      return "info"
+
+
+    case "developing":
+
+      return "primary"
+
+
+    case "testing":
+
+      return "warning"
+
+
+    case "completed":
+
+      return "success"
+
+
+    case "archived":
+
+      return "info"
+
+
+    default:
+
+      return ""
+
+  }
+
+}
+
+
+// ==================================================
 // 功能优先级文字
 // ==================================================
 
 function getPriorityText(
-  priority: "low" | "medium" | "high"
+  priority: DevelopmentFeaturePriority
 ) {
 
   switch (priority) {
@@ -1100,7 +1832,7 @@ function getPriorityText(
 // ==================================================
 
 function getPriorityTagType(
-  priority: "low" | "medium" | "high"
+  priority: DevelopmentFeaturePriority
 ) {
 
   switch (priority) {
@@ -1134,7 +1866,7 @@ function getPriorityTagType(
 // ==================================================
 
 function getFeatureStatusText(
-  status: "todo" | "doing" | "done"
+  status: DevelopmentFeatureStatus
 ) {
 
   switch (status) {
@@ -1144,12 +1876,17 @@ function getFeatureStatusText(
       return "待处理"
 
 
-    case "doing":
+    case "developing":
 
-      return "进行中"
+      return "开发中"
 
 
-    case "done":
+    case "testing":
+
+      return "测试中"
+
+
+    case "completed":
 
       return "已完成"
 
@@ -1157,6 +1894,201 @@ function getFeatureStatusText(
     default:
 
       return status
+
+  }
+
+}
+
+
+// ==================================================
+// 功能状态标签颜色
+// ==================================================
+
+function getFeatureStatusTagType(
+  status: DevelopmentFeatureStatus
+) {
+
+  switch (status) {
+
+    case "todo":
+
+      return "info"
+
+
+    case "developing":
+
+      return "primary"
+
+
+    case "testing":
+
+      return "warning"
+
+
+    case "completed":
+
+      return "success"
+
+
+    default:
+
+      return ""
+
+  }
+
+}
+
+
+// ==================================================
+// Bug 优先级文字
+// ==================================================
+
+function getBugPriorityText(
+  priority: DevelopmentBugPriority
+) {
+
+  switch (priority) {
+
+    case "low":
+
+      return "低"
+
+
+    case "medium":
+
+      return "中"
+
+
+    case "high":
+
+      return "高"
+
+
+    case "critical":
+
+      return "严重"
+
+
+    default:
+
+      return priority
+
+  }
+
+}
+
+
+// ==================================================
+// Bug 优先级标签颜色
+// ==================================================
+
+function getBugPriorityTagType(
+  priority: DevelopmentBugPriority
+) {
+
+  switch (priority) {
+
+    case "low":
+
+      return "info"
+
+
+    case "medium":
+
+      return ""
+
+
+    case "high":
+
+      return "warning"
+
+
+    case "critical":
+
+      return "danger"
+
+
+    default:
+
+      return ""
+
+  }
+
+}
+
+
+// ==================================================
+// Bug 状态文字
+// ==================================================
+
+function getBugStatusText(
+  status: DevelopmentBugStatus
+) {
+
+  switch (status) {
+
+    case "open":
+
+      return "未处理"
+
+
+    case "processing":
+
+      return "处理中"
+
+
+    case "resolved":
+
+      return "已解决"
+
+
+    case "closed":
+
+      return "已关闭"
+
+
+    default:
+
+      return status
+
+  }
+
+}
+
+
+// ==================================================
+// Bug 状态标签颜色
+// ==================================================
+
+function getBugStatusTagType(
+  status: DevelopmentBugStatus
+) {
+
+  switch (status) {
+
+    case "open":
+
+      return "danger"
+
+
+    case "processing":
+
+      return "warning"
+
+
+    case "resolved":
+
+      return "success"
+
+
+    case "closed":
+
+      return "info"
+
+
+    default:
+
+      return ""
 
   }
 
