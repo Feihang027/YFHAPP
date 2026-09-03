@@ -6,52 +6,34 @@ import type { Media } from "@/models/Media"
 
 import {
   addMedia,
-  getMedias
+  getMedias,
+  updateMedia,
+  deleteMedia
 } from "@/services/mediaService"
 
+export const useMediaStore = defineStore("media", {
+  state: () => ({
+    medias: [] as Media[]
+  }),
 
+  actions: {
+    async loadMedias() {
+      this.medias = await getMedias()
+    },
 
-export const useMediaStore = defineStore(
-  "media",
-  {
+    async createMedia(media: Media) {
+      await addMedia(media)
+      await this.loadMedias()
+    },
 
+    async updateMedia(media: Media) {
+      await updateMedia(media)
+      await this.loadMedias()
+    },
 
-    // 当前页面的数据
-    state: () => ({
-
-      medias: [] as Media[]
-
-    }),
-
-
-
-    actions: {
-      /**
-       * 加载所有自媒体数据
-       */
-      async loadMedias() {
-
-
-        this.medias =
-          await getMedias()
-      },
-
-      /**
-       * 新增自媒体内容
-       */
-      async createMedia(
-        media: Media
-      ) {
-
-
-        await addMedia(media)
-
-
-        this.medias.push(media)
-
-      }
-
+    async removeMedia(id: string) {
+      await deleteMedia(id)
+      await this.loadMedias()
     }
-
   }
-)
+})

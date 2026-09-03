@@ -12,52 +12,34 @@ import type {
 
 import {
   addDiet,
-  getDietList
+  getDietList,
+  updateDiet,
+  deleteDiet
 } from "@/services/dietService"
 
+export const useDietStore = defineStore("diet", {
+  state: () => ({
+    diets: [] as Diet[]
+  }),
 
+  actions: {
+    async loadDiet() {
+      this.diets = await getDietList()
+    },
 
-export const useDietStore =
-  defineStore(
-    "diet",
-    {
+    async createDiet(diet: Diet) {
+      await addDiet(diet)
+      await this.loadDiet()
+    },
 
+    async updateDiet(diet: Diet) {
+      await updateDiet(diet)
+      await this.loadDiet()
+    },
 
-      state: () => ({
-
-        diets: [] as Diet[]
-
-      }),
-
-
-
-      actions: {
-
-
-
-        async loadDiet() {
-
-          this.diets =
-            await getDietList()
-
-        },
-
-
-
-
-        async createDiet(
-          diet: Diet
-        ) {
-
-          await addDiet(
-            diet
-          )
-
-
-        }
-
-
-      }
-
-
-    })
+    async removeDiet(id: string) {
+      await deleteDiet(id)
+      await this.loadDiet()
+    }
+  }
+})

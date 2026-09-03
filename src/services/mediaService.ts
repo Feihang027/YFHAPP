@@ -3,7 +3,9 @@ import type { Media } from "@/models/Media"
 
 import {
   createRecord,
-  getAllRecords
+  getAllRecords,
+  updateRecord,
+  deleteRecord
 } from "@/database"
 
 
@@ -28,12 +30,23 @@ export function addMedia(
 
 }
 
-// 获取全部内容
-
+/**
+ * 获取全部内容
+ */
 export function getMedias() {
+  return getAllRecords<Media>(STORE_NAMES.MEDIA)
+}
 
-  return getAllRecords<Media>(
-    STORE_NAMES.MEDIA
-  )
+/**
+ * 更新内容
+ */
+export function updateMedia(media: Media) {
+  return updateRecord(STORE_NAMES.MEDIA, media)
+}
 
+/**
+ * 删除内容
+ */
+export function deleteMedia(id: string) {
+  return deleteRecord(STORE_NAMES.MEDIA, id)
 }
