@@ -14,6 +14,14 @@
 
       <div class="header-actions">
 
+        <el-button @click="handleExport">
+          导出 JSON
+        </el-button>
+
+        <el-button @click="triggerImportInput">
+          导入 JSON
+        </el-button>
+
         <el-button type="primary" @click="openCreate">
           新增项目
         </el-button>
@@ -27,6 +35,14 @@
         </el-button>
 
       </div>
+
+      <input
+        ref="importInputRef"
+        type="file"
+        accept="application/json"
+        style="display:none"
+        @change="handleImportFile"
+      />
 
     </div>
 
@@ -152,6 +168,19 @@
           </p>
 
 
+          <!-- 下一步行动 -->
+
+          <p v-if="project.nextAction">
+
+            <strong>
+              下一步行动：
+            </strong>
+
+            {{ project.nextAction }}
+
+          </p>
+
+
           <!-- 时间 -->
 
           <div class="project-info">
@@ -172,6 +201,10 @@
           <!-- 操作 -->
 
           <div class="project-action">
+
+            <el-button type="primary" size="small" @click="goDetail(project.id)">
+              查看详情
+            </el-button>
 
             <el-button type="primary" size="small" @click="editProject(project)">
               编辑
@@ -481,6 +514,20 @@
 
         </el-form-item>
 
+
+        <!-- 下一步行动 -->
+
+        <el-form-item label="下一步行动">
+
+          <el-input
+            v-model="form.nextAction"
+            type="textarea"
+            :rows="3"
+            placeholder="例如：完成登录模块、修复首页加载慢等"
+          />
+
+        </el-form-item>
+
       </el-form>
 
 
@@ -695,6 +742,9 @@ import {
 } from "vue"
 
 
+import { useRouter } from "vue-router"
+
+
 import {
   ElMessage,
   ElMessageBox
@@ -704,6 +754,10 @@ import {
 import {
   useDevelopmentStore
 } from "@/stores/developmentStore"
+
+import type {
+  DevelopmentExportData
+} from "@/services/developmentService"
 
 
 import type {
@@ -738,6 +792,8 @@ import type {
 
 
 const store = useDevelopmentStore()
+const router = useRouter()
+const importInputRef = ref<HTMLInputElement | null>(null)
 
 
 // ==================================================
@@ -789,6 +845,8 @@ interface ProjectForm {
 
   note: string
 
+  nextAction: string
+
 }
 
 
@@ -811,7 +869,9 @@ const form = ref<ProjectForm>({
 
   localPath: "",
 
-  note: ""
+  note: "",
+
+  nextAction: ""
 
 })
 
@@ -923,7 +983,9 @@ function openCreate() {
 
     localPath: "",
 
-    note: ""
+    note: "",
+
+    nextAction: ""
 
   }
 
@@ -966,7 +1028,10 @@ function editProject(
       project.localPath || "",
 
     note:
-      project.note || ""
+      project.note || "",
+
+    nextAction:
+      project.nextAction || ""
 
   }
 
@@ -1044,6 +1109,9 @@ async function saveProject() {
       note:
         form.value.note || undefined,
 
+      nextAction:
+        form.value.nextAction || undefined,
+
       createdAt:
         oldProject.createdAt,
 
@@ -1101,6 +1169,9 @@ async function saveProject() {
 
       note:
         form.value.note || undefined,
+
+      nextAction:
+        form.value.nextAction || undefined,
 
       createdAt:
         now,
@@ -2115,6 +2186,107 @@ function formatDate(
     .slice(0, 16)
 
 }
+
+
+// ==================================================
+// 跳转详情页
+// ==================================================
+
+function goDetail(projectId: string) {
+  router.push(`/development/${projectId}`)
+}
+
+
+// ==================================================
+// 导出 JSON
+// ==================================================
+
+function handleExport() {
+  const data = store.exportData()
+  const blob = new Blob(
+    [JSON.stringify(data, null, 2)],
+    { type: "application/json" }
+  )
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement("a")
+  a.href = url
+  const date = new Date().toISOString().slice(0, 10)
+  a.download = `yfhapp-development-${date}.json`
+  document.body.appendChild(a)
+  a.click()
+  document.body.removeChild(a)
+  URL.revokeObjectURL(url)
+  ElMessage.success("导出成功")
+}
+
+
+// ==================================================
+// 导入 JSON（触发文件选择）
+// ==================================================
+
+function triggerImportInput() {
+  if (!importInputRef.value) return
+  importInputRef.value.value = ""
+  importInputRef.value.click()
+}
+
+
+// ==================================================
+// 导入 JSON（文件处理）
+// ==================================================
+
+async function handleImportFile(e: Event) {
+  const input = e.target as HTMLInputElement
+  const file = input.files?.[0]
+  if (!file) return
+
+  try {
+    const text = await file.text()
+    let json: any
+    try {
+      json = JSON.parse(text)
+    } catch {
+      ElMessage.error("文件不是合法的 JSON 格式")
+      return
+    }
+
+    if (!json || json.version !== 1) {
+      ElMessage.error("文件版本不支持，请使用 version=1 的导出文件")
+      return
+    }
+
+    if (
+      !Array.isArray(json.projects) ||
+      !Array.isArray(json.features) ||
+      !Array.isArray(json.bugs) ||
+      !Array.isArray(json.logs)
+    ) {
+      ElMessage.error("导入文件结构不正确")
+      return
+    }
+
+    await ElMessageBox.confirm(
+      `导入后将覆盖当前所有开发数据（${json.projects.length} 个项目、${json.features.length} 个功能、${json.bugs.length} 个 Bug、${json.logs.length} 条日志），确定继续？`,
+      "导入确认",
+      {
+        confirmButtonText: "覆盖导入",
+        cancelButtonText: "取消",
+        type: "warning"
+      }
+    )
+
+    await store.importData(json as DevelopmentExportData)
+    ElMessage.success("导入成功")
+
+  } catch (err) {
+    if (err === "cancel" || (err as any)?.action === "cancel") {
+      return
+    }
+    console.error(err)
+    ElMessage.error("导入失败")
+  }
+}
+
 
 </script>
 

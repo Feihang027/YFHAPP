@@ -55,3 +55,9 @@ export function openDatabase(): Promise<IDBDatabase> {
     }
   })
 }
+
+
+// 复用 openDatabase 的单例逻辑，保持 API 简洁
+export async function getDatabase(): Promise<IDBDatabase> {
+  return await openDatabase()
+}

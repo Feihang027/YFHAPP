@@ -68,8 +68,9 @@ YFHAPP 首页
 
 
 
-<!-- 开发项目 -->
-<el-col :span="8">
+<!-- 开发模块统计 -->
+
+<el-col :span="6">
 <el-card>
 <h3>
 开发项目
@@ -77,11 +78,58 @@ YFHAPP 首页
 
 <div class="number">
 
-{{dashboard.summary.projectCount}}
+{{dashboard.devSummary.projectCount}}
 
 </div>
 </el-card>
 </el-col>
+
+
+<el-col :span="6">
+<el-card>
+<h3>
+进行中项目
+</h3>
+
+<div class="number">
+
+{{dashboard.devSummary.ongoingProjectCount}}
+
+</div>
+</el-card>
+</el-col>
+
+
+<el-col :span="6">
+<el-card>
+<h3>
+功能需求
+</h3>
+
+<div class="number">
+
+{{dashboard.devSummary.featureCount}}
+
+</div>
+</el-card>
+</el-col>
+
+
+<el-col :span="6">
+<el-card>
+<h3>
+Bug 数
+</h3>
+
+<div class="number">
+
+{{dashboard.devSummary.bugCount}}
+
+</div>
+</el-card>
+</el-col>
+
+
 </el-row>
 
 
@@ -325,6 +373,44 @@ YFHAPP 首页
 </el-row>
 
 
+<!-- 最近开发日志 -->
+<el-card>
+<h2>
+最近开发日志
+</h2>
+
+<div v-if="dashboard.recentDevLogs.length">
+
+  <div
+    v-for="log in dashboard.recentDevLogs"
+    :key="log.id"
+    class="recent-log-item"
+  >
+
+    <div class="log-header">
+      <el-tag :type="getLogTagType(log.type)" size="small">
+        {{ getLogTypeText(log.type) }}
+      </el-tag>
+      <span class="log-time">
+        {{ formatDateTime(log.createdAt) }}
+      </span>
+    </div>
+
+    <p class="log-content">
+      {{ log.content }}
+    </p>
+
+  </div>
+
+</div>
+
+<div v-else>
+暂无开发日志
+</div>
+
+</el-card>
+
+
 <!-- 快捷操作 -->
 
 <h2 class="quick-title">
@@ -418,6 +504,10 @@ useDashboardStore
 }
 from "@/stores/dashboardStore"
 
+import type {
+  DevelopmentLogType
+} from "@/models/DevelopmentLog"
+
 const dashboard = useDashboardStore()
 
 const router = useRouter()
@@ -433,6 +523,29 @@ query:{
 planId:plan.id
 }
 })
+}
+
+function getLogTypeText(type: DevelopmentLogType) {
+  switch (type) {
+    case "daily": return "日常记录"
+    case "problem": return "遇到问题"
+    case "solution": return "解决方案"
+    default: return type
+  }
+}
+
+function getLogTagType(type: DevelopmentLogType) {
+  switch (type) {
+    case "daily": return ""
+    case "problem": return "danger"
+    case "solution": return "success"
+    default: return ""
+  }
+}
+
+function formatDateTime(value: string) {
+  if (!value) return "-"
+  return value.replace("T", " ").slice(0, 16)
 }
 
 
@@ -483,6 +596,35 @@ border-bottom:1px solid #eee;
 .fitness-item .el-button{
 width:120px;
 height:40px;
+}
+
+.recent-log-item{
+padding: 16px 0;
+border-bottom: 1px solid #f0f0f0;
+text-align: left;
+}
+
+.recent-log-item:last-child{
+border-bottom: none;
+}
+
+.recent-log-item .log-header{
+display: flex;
+align-items: center;
+gap: 12px;
+margin-bottom: 8px;
+}
+
+.recent-log-item .log-time{
+font-size: 13px;
+color: #909399;
+}
+
+.recent-log-item .log-content{
+margin: 0;
+line-height: 1.7;
+color: #303133;
+white-space: pre-wrap;
 }
 
 </style>

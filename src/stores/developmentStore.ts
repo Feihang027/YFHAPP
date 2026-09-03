@@ -18,6 +18,11 @@ import type {
 } from "@/models/DevelopmentBug"
 
 
+import type {
+  DevelopmentLog
+} from "@/models/DevelopmentLog"
+
+
 import {
   addDevelopmentProject,
   getDevelopmentProjects,
@@ -32,7 +37,17 @@ import {
   addDevelopmentBug,
   getDevelopmentBugs,
   updateDevelopmentBug,
-  deleteDevelopmentBug
+  deleteDevelopmentBug,
+
+  addDevelopmentLog,
+  getDevelopmentLogs,
+  deleteDevelopmentLog,
+
+  replaceAllDevelopmentData
+} from "@/services/developmentService"
+
+import type {
+  DevelopmentExportData
 } from "@/services/developmentService"
 
 
@@ -65,7 +80,14 @@ export const useDevelopmentStore =
         // =========================
 
         bugs:
-          [] as DevelopmentBug[]
+          [] as DevelopmentBug[],
+
+        // =========================
+        // 开发日志
+        // =========================
+
+        logs:
+          [] as DevelopmentLog[]
 
       }),
 
@@ -80,6 +102,7 @@ export const useDevelopmentStore =
           this.projects = await getDevelopmentProjects()
           this.features = await getDevelopmentFeatures()
           this.bugs = await getDevelopmentBugs()
+          this.logs = await getDevelopmentLogs()
         },
 
 
@@ -216,6 +239,51 @@ export const useDevelopmentStore =
           await deleteDevelopmentBug(
             id
           )
+          await this.loadDevelopment()
+        },
+
+
+        // =========================
+        // Log
+        // =========================
+        async createLog(
+          log: DevelopmentLog
+        ) {
+          await addDevelopmentLog(log)
+          this.logs.push(log)
+        },
+
+
+        async removeLog(
+          id: string
+        ) {
+          await deleteDevelopmentLog(id)
+          await this.loadDevelopment()
+        },
+
+
+        // =========================
+        // 导出 JSON
+        // =========================
+        exportData(): DevelopmentExportData {
+          return {
+            version: 1,
+            exportedAt: new Date().toISOString(),
+            projects: this.projects,
+            features: this.features,
+            bugs: this.bugs,
+            logs: this.logs
+          }
+        },
+
+
+        // =========================
+        // 导入 JSON（全量覆盖）
+        // =========================
+        async importData(
+          data: DevelopmentExportData
+        ) {
+          await replaceAllDevelopmentData(data)
           await this.loadDevelopment()
         }
       }

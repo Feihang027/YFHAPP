@@ -24,8 +24,16 @@ import {
 
 
 import {
-  getDevelopmentProjects
+  getDevelopmentProjects,
+  getDevelopmentFeatures,
+  getDevelopmentBugs,
+  getDevelopmentLogs
 } from "@/services/developmentService"
+
+
+import type {
+  DevelopmentLog
+} from "@/models/DevelopmentLog"
 
 
 export const useDashboardStore =
@@ -55,6 +63,25 @@ export const useDashboardStore =
           projectCount: 0
 
         },
+
+
+        // =====================
+        // 开发模块统计
+        // =====================
+
+        devSummary: {
+
+          projectCount: 0,
+
+          ongoingProjectCount: 0,
+
+          featureCount: 0,
+
+          bugCount: 0
+
+        },
+
+        recentDevLogs: [] as DevelopmentLog[],
 
 
         // =====================
@@ -143,11 +170,20 @@ export const useDashboardStore =
 
 
           // =====================
-          // Development 项目
+          // Development 全部数据
           // =====================
 
           const projects =
             await getDevelopmentProjects()
+
+          const features =
+            await getDevelopmentFeatures()
+
+          const bugs =
+            await getDevelopmentBugs()
+
+          const logs =
+            await getDevelopmentLogs()
 
 
           // =====================
@@ -172,6 +208,22 @@ export const useDashboardStore =
 
           this.summary.projectCount =
             projects.length
+
+
+          // =====================
+          // Development 统计
+          // =====================
+
+          this.devSummary.projectCount = projects.length
+          this.devSummary.ongoingProjectCount =
+            projects.filter(p => p.status === "developing" || p.status === "testing").length
+          this.devSummary.featureCount = features.length
+          this.devSummary.bugCount = bugs.length
+
+          this.recentDevLogs =
+            [...logs]
+              .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+              .slice(0, 5)
 
 
           // =====================

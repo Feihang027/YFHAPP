@@ -6,6 +6,7 @@ import Dashboard from '../views/Dashboard.vue'
 import Tasks from '../views/Tasks.vue'
 import Media from '../views/Media.vue'
 import Development from '../views/Development.vue'
+import DevelopmentDetail from '../views/DevelopmentDetail.vue'
 import Consulting from '../views/Consulting.vue'
 import Fitness from '../views/Fitness.vue'
 import FitnessRecord from '../views/FitnessRecord.vue'
@@ -42,6 +43,10 @@ const router = createRouter({
         {
           path: 'development',
           component: Development
+        },
+        {
+          path: 'development/:id',
+          component: DevelopmentDetail
         },
         {
           path: 'consulting',
@@ -87,7 +92,6 @@ const router = createRouter({
           path: 'fitness-templates',
           component: FitnessTemplates
         }
-
       ]
     }
   ]

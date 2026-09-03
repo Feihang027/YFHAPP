@@ -1,5 +1,6 @@
 export {
-  openDatabase
+  openDatabase,
+  getDatabase
 } from "./db"
 
 export {

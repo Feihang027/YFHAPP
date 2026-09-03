@@ -26,6 +26,9 @@ export interface DevelopmentProject {
   // 项目备注
   note?: string
 
+  // 下一步行动
+  nextAction?: string
+
   // 创建时间
   createdAt: string
 

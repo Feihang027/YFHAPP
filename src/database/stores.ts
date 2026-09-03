@@ -1,7 +1,7 @@
 export const DB_NAME = "PersonalOS"
 
 
-export const DB_VERSION = 3
+export const DB_VERSION = 4
 
 
 export const STORE_NAMES = {
@@ -35,6 +35,8 @@ export const STORE_NAMES = {
 
   DEVELOPMENT_FEATURES: "development_features",
 
-  DEVELOPMENT_BUGS: "development_bugs"
+  DEVELOPMENT_BUGS: "development_bugs",
+
+  DEVELOPMENT_LOGS: "development_logs"
 
 }
